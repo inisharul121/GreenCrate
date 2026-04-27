@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', system-ui, sans-serif;
+    --font-playfair: 'Playfair Display', Georgia, serif;
+    --color-forest: #2D6A4F;
+    --color-sage: #52B788;
+    --color-cream: #F9F5F0;
+    --color-charcoal: #1A1A2E;
+  }
+
+  * {
+    @apply border-sage/20;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-cream text-charcoal font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-sage/30 text-forest-dark;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track { @apply bg-cream-dark; }
+  ::-webkit-scrollbar-thumb { @apply bg-sage/50 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-forest/60; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full bg-forest text-white font-semibold text-sm
+           hover:bg-forest-light active:bg-forest-dark
+           transition-all duration-200 shadow-md hover:shadow-lg
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-forest text-forest font-semibold text-sm
+           hover:bg-forest hover:text-white
+           transition-all duration-200
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full text-forest font-medium text-sm
+           hover:bg-sage/15 active:bg-sage/25
+           transition-all duration-150
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage;
+  }
+
+  .card {
+    @apply bg-white rounded-3xl shadow-card hover:shadow-card-hover transition-all duration-300;
+  }
+
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  .container-tight {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-green  { @apply badge bg-sage/15 text-forest; }
+  .badge-amber  { @apply badge bg-amber/20 text-amber-800; }
+  .badge-cream  { @apply badge bg-cream-dark text-charcoal/70; }
+  .badge-white  { @apply badge bg-white/20 text-white backdrop-blur-sm; }
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/60 shadow-glass;
+  }
+
+  .tag-pill {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-cream-dark text-charcoal/60;
+  }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+
+  .animate-delay-100 { animation-delay: 100ms; }
+  .animate-delay-200 { animation-delay: 200ms; }
+  .animate-delay-300 { animation-delay: 300ms; }
+  .animate-delay-400 { animation-delay: 400ms; }
+  .animate-delay-500 { animation-delay: 500ms; }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-forest to-sage;
+  }
+
+  .hero-blur {
+    backdrop-filter: blur(120px);
+  }
+}
