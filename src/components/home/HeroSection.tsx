@@ -10,11 +10,11 @@ export function HeroSection() {
       className="relative min-h-screen flex items-center bg-hero-gradient overflow-hidden"
       aria-label="Hero"
     >
-      {/* Background blobs */}
+      {/* Background blobs - adjusted for dark contrast */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-sage/20 blur-[120px]" />
-        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-forest-light/30 blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-sage/10 blur-[80px]" />
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-sage/10 blur-[120px]" />
+        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-forest/20 blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-sage/5 blur-[80px]" />
         {/* Grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -34,7 +34,7 @@ export function HeroSection() {
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/12 border border-white/20 text-white/90 text-sm font-medium mb-8 backdrop-blur-sm"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber" />
-              Trusted by 500+ Swiss companies
+              Trusted by 500+ Bangladeshi companies
             </motion.div>
 
             {/* Headline */}
@@ -64,25 +64,19 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex flex-wrap gap-3"
+              className="flex flex-wrap gap-4"
             >
               <Link
+                href="/test-order"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-amber text-charcoal font-bold text-base hover:bg-white transition-all shadow-xl hover:shadow-amber/20 hover:-translate-y-1 duration-200"
+              >
+                Claim Free Box <Sparkles className="w-4 h-4" />
+              </Link>
+              <Link
                 href="/fruits"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-forest font-bold text-sm hover:bg-cream transition-all shadow-xl hover:shadow-2xl hover:-translate-y-0.5 duration-200"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-forest font-bold text-base hover:bg-cream transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 duration-200"
               >
                 Fruit Boxes <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/catering"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white/12 border border-white/25 text-white font-semibold text-sm hover:bg-white/20 transition-all duration-200 backdrop-blur-sm"
-              >
-                Meeting Catering
-              </Link>
-              <Link
-                href="/gifts"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white/12 border border-white/25 text-white font-semibold text-sm hover:bg-white/20 transition-all duration-200 backdrop-blur-sm"
-              >
-                Corporate Gifts
               </Link>
             </motion.div>
 
@@ -130,12 +124,14 @@ export function HeroSection() {
               <div className="absolute inset-0 rounded-full border-2 border-white/10 animate-[spin_30s_linear_infinite]" />
               <div className="absolute inset-8 rounded-full border border-white/8 animate-[spin_20s_linear_infinite_reverse]" />
 
-              {/* Generated Hero Image */}
-              <div className="absolute inset-4 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/20">
-                <img
-                  src="/images/hero.png"
-                  alt="Fresh GreenCrate fruit box delivery"
-                  className="w-full h-full object-cover"
+              {/* Floating Apple Visual */}
+              <div className="absolute inset-0 flex items-center justify-center p-0">
+                <motion.img
+                  animate={{ rotate: [0, 6, 0, -6, 0] }}
+                  transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+                  src="/images/apple.png"
+                  alt="Fresh Green Apple"
+                  className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] scale-[2.0]"
                 />
               </div>
 
@@ -174,11 +170,17 @@ function FloatingBadge({ top, left, delay, emoji, label }: { top: string; left: 
       initial={{ opacity: 0, scale: 0.7 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay, type: "spring", stiffness: 200 }}
-      style={{ top, left }}
-      className="absolute flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-glass"
+      style={{ top, left, position: 'absolute' }}
+      className="z-20 origin-center"
     >
-      <span className="text-lg">{emoji}</span>
-      <span className="text-white/90 text-xs font-semibold whitespace-nowrap">{label}</span>
+      <motion.div
+        animate={{ rotate: [0, 6, 0, -6, 0] }}
+        transition={{ repeat: Infinity, duration: 8, ease: "easeInOut", delay }}
+        className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-glass"
+      >
+        <span className="text-lg">{emoji}</span>
+        <span className="text-white/90 text-xs font-semibold whitespace-nowrap">{label}</span>
+      </motion.div>
     </motion.div>
   );
 }

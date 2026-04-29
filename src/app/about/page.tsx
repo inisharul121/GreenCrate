@@ -14,10 +14,10 @@ const STATS = [
 ];
 
 const VALUES = [
-  { icon: Leaf,    title: "Local sourcing first",   desc: "We partner with 40+ Swiss and regional farms, keeping food miles low and quality high." },
+  { icon: Leaf,    title: "Local sourcing first",   desc: "We partner with 40+ local Bangladeshi farms, keeping food miles low and quality high." },
   { icon: Recycle, title: "Zero-waste packaging",   desc: "All packaging is compostable, recyclable, or reusable. Zero single-use plastic — ever." },
   { icon: Heart,   title: "People over profit",     desc: "Fair wages for farmers, living wages for drivers, and a culture of care at every level." },
-  { icon: Users,   title: "Community-driven",       desc: "10% of profits go back to urban farming initiatives across Switzerland." },
+  { icon: Users,   title: "Community-driven",       desc: "10% of profits go back to urban farming initiatives across Bangladesh." },
 ];
 
 export default function AboutPage() {
@@ -55,8 +55,8 @@ export default function AboutPage() {
             <p className="text-sm font-semibold text-sage uppercase tracking-widest mb-3">How it started</p>
             <h2 className="font-display text-4xl font-bold text-charcoal mb-5">From a bootstrapped idea to 500+ offices</h2>
             <div className="space-y-4 text-charcoal/65 leading-relaxed">
-              <p>GreenCrate began when our founder, Nina Keller, noticed that the office fruit basket at her Zürich startup was always sad, overripe, and wasteful. She called a local farm, made a deal, and delivered 10 boxes by bicycle that first week.</p>
-              <p>Word spread quickly. Within six months, she had 50 clients and a small team. Today we deliver to 500+ companies across Switzerland, with a fleet of electric vans and a network of 40+ farm partners.</p>
+              <p>GreenCrate began when our founder, Nina Chowdhury, noticed that the office fruit basket at her Dhaka startup was always sad, overripe, and wasteful. She called a local farm, made a deal, and delivered 10 boxes by bicycle that first week.</p>
+              <p>Word spread quickly. Within six months, she had 50 clients and a small team. Today we deliver to 500+ companies across Bangladesh, with a fleet of electric vans and a network of 40+ farm partners.</p>
               <p>Our mission has never changed: fresh, sustainable, beautiful workplace food — delivered with a smile before your team arrives.</p>
             </div>
           </div>

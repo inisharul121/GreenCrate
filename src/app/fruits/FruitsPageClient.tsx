@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Filter, SlidersHorizontal } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Filter, SlidersHorizontal, Info } from "lucide-react";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { SubscriptionToggle } from "@/components/ui/SubscriptionToggle";
-import type { Product, SubscriptionFrequency } from "@/types";
+import { OfferTiers } from "@/components/fruits/OfferTiers";
+import type { Product, SubscriptionFrequency, PurchaseType } from "@/types";
 
 const FILTERS = ["All", "Seasonal", "Organic", "Bestseller", "Large Team"];
 
 export function FruitsPageClient({ products }: { products: Product[] }) {
   const [activeFilter, setFilter]       = useState("All");
-  const [isSubscription, setIsSub]      = useState(false);
+  const [purchaseType, setPurchaseType] = useState<PurchaseType>("subscription");
   const [frequency, setFrequency]       = useState<SubscriptionFrequency>("weekly");
 
   const filtered = activeFilter === "All"
@@ -22,69 +22,99 @@ export function FruitsPageClient({ products }: { products: Product[] }) {
       );
 
   return (
-    <>
+    <div className="bg-[#FDFCF9] min-h-screen">
       {/* Hero */}
-      <section className="pt-28 pb-14 bg-hero-gradient">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.p initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:0.1}}
-            className="text-sage-light text-sm font-semibold uppercase tracking-widest mb-3">Fresh from the farm</motion.p>
+      <section className="pt-32 pb-20 overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-[40%] h-full bg-sage/5 -z-10 rounded-l-[5rem]" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <motion.p initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:0.1}}
+            className="text-forest text-xs font-bold uppercase tracking-[0.2em] mb-4">Fresh from the farm</motion.p>
           <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
-            className="font-display text-5xl sm:text-6xl font-bold text-white mb-4">
-            Fruit Boxes
+            className="font-display text-6xl sm:text-7xl font-bold text-charcoal mb-6 leading-tight">
+            Our Fruit <span className="text-forest italic font-serif">Boxes</span>
           </motion.h1>
           <motion.p initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.3}}
-            className="text-white/60 text-lg max-w-xl mx-auto">
-            Handpicked seasonal fruits delivered to your office — subscribe and save up to 15%.
+            className="text-charcoal/50 text-xl max-w-2xl mx-auto mb-12">
+            Seasonal goodness delivered straight to your desk. Choose the plan that fits your team's rhythm.
           </motion.p>
         </div>
+
+        {/* Offer Tiers */}
+        <motion.div initial={{opacity:0, y:30}} animate={{opacity:1, y:0}} transition={{delay:0.4}}>
+          <OfferTiers selected={purchaseType} onSelect={setPurchaseType} />
+        </motion.div>
       </section>
 
-      {/* Filters */}
-      <section className="sticky top-16 z-30 bg-white/90 backdrop-blur-md border-b border-sage/10 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          {/* Filter pills */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <Filter className="w-4 h-4 text-charcoal/40" />
-            {FILTERS.map(f => (
-              <button key={f} onClick={() => setFilter(f)}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
-                  activeFilter===f ? "bg-forest text-white" : "bg-cream text-charcoal/60 hover:bg-cream-dark"
-                }`}>
-                {f}
-              </button>
-            ))}
-          </div>
-          {/* Subscription toggle */}
-          <div className="flex items-center gap-2 shrink-0">
-            <SlidersHorizontal className="w-4 h-4 text-charcoal/40" />
-            <SubscriptionToggle
-              value={frequency}
-              onChange={setFrequency}
-              isSubscription={isSubscription}
-              onSubscriptionChange={setIsSub}
-              showOneTime
-            />
-          </div>
-        </div>
-      </section>
+      {/* Info Banner */}
+      <AnimatePresence>
+        {purchaseType === "test" && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="bg-forest/5 border-y border-forest/10 py-3"
+          >
+            <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-2 text-forest font-semibold text-sm">
+              <Info className="w-4 h-4" />
+              Limit 1 free test box per company. Valid for new customers only.
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Grid */}
-      <section className="py-16 bg-cream">
+      {/* Filters & Product Grid */}
+      <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-sm text-charcoal/50 mb-6">{filtered.length} products</p>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12 border-b border-sage/10 pb-8">
+            <div className="flex items-center gap-3 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
+              <Filter className="w-4 h-4 text-charcoal/30 shrink-0" />
+              {FILTERS.map(f => (
+                <button key={f} onClick={() => setFilter(f)}
+                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                    activeFilter===f ? "bg-charcoal text-white shadow-md" : "bg-white text-charcoal/40 hover:text-charcoal border border-sage/10"
+                  }`}>
+                  {f}
+                </button>
+              ))}
+            </div>
+
+            {purchaseType === "subscription" && (
+              <div className="flex items-center gap-3 bg-white p-1.5 rounded-full border border-sage/10 shadow-sm">
+                <SlidersHorizontal className="w-4 h-4 text-charcoal/30 ml-3" />
+                <select value={frequency} onChange={e => setFrequency(e.target.value as SubscriptionFrequency)}
+                  className="text-sm font-bold text-charcoal bg-transparent focus:outline-none pr-4">
+                  <option value="weekly">Weekly</option>
+                  <option value="biweekly">Bi-weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between mb-8">
+            <p className="text-sm font-bold text-charcoal/30 uppercase tracking-widest">{filtered.length} varieties found</p>
+          </div>
+
           {filtered.length === 0 ? (
-            <div className="text-center py-20 text-charcoal/40">No products match this filter.</div>
+            <div className="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-sage/10">
+              <p className="text-charcoal/30 font-medium text-lg">No boxes match your selection.</p>
+            </div>
           ) : (
-            <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filtered.map(p => (
-                <motion.div key={p.id} layout initial={{opacity:0,scale:0.96}} animate={{opacity:1,scale:1}}>
-                  <ProductCard product={p} isSubscription={isSubscription} frequency={frequency} />
+                <motion.div key={p.id} layout initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}}>
+                  <ProductCard 
+                    product={p} 
+                    purchaseType={purchaseType} 
+                    frequency={frequency} 
+                  />
                 </motion.div>
               ))}
             </motion.div>
           )}
         </div>
       </section>
-    </>
+    </div>
   );
 }

@@ -6,9 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat("de-CH", {
+  return new Intl.NumberFormat("en-BD", {
     style: "currency",
-    currency: "CHF",
+    currency: "BDT",
     minimumFractionDigits: 2,
   }).format(price);
 }

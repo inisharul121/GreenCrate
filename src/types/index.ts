@@ -2,13 +2,14 @@
 
 export type ProductCategory = "fruits" | "catering" | "gifts";
 export type SubscriptionFrequency = "weekly" | "biweekly" | "monthly";
+export type PurchaseType = "test" | "subscription" | "onetime";
 export type DietaryTag = "vegan" | "vegetarian" | "gluten-free" | "organic" | "dairy-free";
 
 export interface Product {
   id: string;
   name: string;
   description: string;
-  price: number; // one-time price in CHF
+  price: number; // one-time price in BDT
   subscriptionPrices: Record<SubscriptionFrequency, number>;
   category: ProductCategory;
   subcategory?: string;
@@ -27,7 +28,7 @@ export interface Product {
 export interface CartItem {
   product: Product;
   quantity: number;
-  isSubscription: boolean;
+  purchaseType: PurchaseType;
   frequency?: SubscriptionFrequency;
 }
 

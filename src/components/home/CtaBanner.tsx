@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, Leaf } from "lucide-react";
 
@@ -5,7 +7,7 @@ export function CtaBanner() {
   return (
     <section className="py-20 bg-white" aria-label="Get started CTA">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-4xl bg-sage-gradient p-12 lg:p-16 text-center">
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-sage-gradient p-12 lg:p-16 text-center shadow-premium">
           {/* Blobs */}
           <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/15 blur-3xl" />
           <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-forest/20 blur-3xl" />
@@ -19,10 +21,10 @@ export function CtaBanner() {
               Ready to nourish your team?
             </h2>
             <p className="text-white/70 text-lg mb-10 max-w-xl mx-auto">
-              Join 500+ Swiss companies delivering freshness every morning. First box on us — no commitment.
+              Join 500+ Bangladeshi companies delivering freshness every morning. First box on us — no commitment.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <Link href="/fruits"
+              <Link href="/test-order"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-forest font-bold hover:bg-cream transition-all shadow-xl hover:shadow-2xl hover:-translate-y-0.5 duration-200">
                 Get Your First Box <ArrowRight className="w-4 h-4" />
               </Link>

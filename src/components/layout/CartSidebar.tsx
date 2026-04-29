@@ -78,62 +78,82 @@ export function CartSidebar() {
                 </div>
               ) : (
                 <ul className="divide-y divide-sage/8 px-4 py-2">
-                  {items.map((item) => {
-                    const price = item.isSubscription && item.frequency
-                      ? item.product.subscriptionPrices[item.frequency]
-                      : item.product.price;
-                    return (
-                      <li key={item.product.id} className="flex gap-4 py-4">
-                        {/* Image */}
-                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-cream-dark shrink-0 relative">
-                          <Image
-                            src={item.product.image}
-                            alt={item.product.name}
-                            fill
-                            className="object-cover"
-                            sizes="64px"
-                          />
-                        </div>
-
-                        {/* Details */}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-charcoal truncate">{item.product.name}</p>
-                          {item.isSubscription && (
-                            <span className="text-xs text-forest font-medium capitalize">{item.frequency} subscription</span>
-                          )}
-                          <p className="text-sm font-bold text-forest mt-1">{formatPrice(price * item.quantity)}</p>
-
-                          {/* Qty controls */}
-                          <div className="flex items-center gap-2 mt-2">
-                            <button
-                              onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                              aria-label="Decrease quantity"
-                              className="w-6 h-6 rounded-full border border-sage/30 flex items-center justify-center hover:bg-forest hover:border-forest hover:text-white transition-all text-charcoal/60"
-                            >
-                              <Minus className="w-3 h-3" />
-                            </button>
-                            <span className="text-sm font-semibold text-charcoal w-4 text-center">{item.quantity}</span>
-                            <button
-                              onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                              aria-label="Increase quantity"
-                              className="w-6 h-6 rounded-full border border-sage/30 flex items-center justify-center hover:bg-forest hover:border-forest hover:text-white transition-all text-charcoal/60"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </button>
+                    {items.map((item) => {
+                      const isTest = item.purchaseType === "test";
+                      const price = isTest ? 0 : (
+                        item.purchaseType === "subscription" && item.frequency
+                          ? item.product.subscriptionPrices[item.frequency]
+                          : item.product.price
+                      );
+                      
+                      return (
+                        <li key={`${item.product.id}-${item.purchaseType}`} className="flex gap-4 py-6">
+                          {/* Image */}
+                          <div className="w-20 h-20 rounded-2xl overflow-hidden bg-cream-dark shrink-0 relative border border-sage/10">
+                            <Image
+                              src={item.product.image}
+                              alt={item.product.name}
+                              fill
+                              className="object-cover"
+                              sizes="80px"
+                            />
+                            {isTest && (
+                              <div className="absolute inset-0 bg-forest/20 flex items-center justify-center">
+                                <span className="text-[10px] font-black text-white uppercase tracking-tighter bg-forest px-2 py-0.5 rounded-full">Free</span>
+                              </div>
+                            )}
                           </div>
-                        </div>
 
-                        {/* Remove */}
-                        <button
-                          onClick={() => removeItem(item.product.id)}
-                          aria-label={`Remove ${item.product.name}`}
-                          className="shrink-0 w-7 h-7 flex items-center justify-center rounded-full hover:bg-red-50 hover:text-red-400 text-charcoal/30 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </li>
-                    );
-                  })}
+                          {/* Details */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start mb-1">
+                              <p className="text-sm font-bold text-charcoal truncate pr-2">{item.product.name}</p>
+                              <button
+                                onClick={() => removeItem(item.product.id)}
+                                className="text-charcoal/20 hover:text-red-400 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              <span className={cn(
+                                "text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md",
+                                isTest ? "bg-forest text-white" : "bg-sage/10 text-forest"
+                              )}>
+                                {isTest ? "Free Trial" : item.purchaseType}
+                              </span>
+                              {item.purchaseType === "subscription" && (
+                                <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-amber/10 text-amber-700">
+                                  {item.frequency}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3 bg-cream/50 rounded-full px-2 py-1 border border-sage/5">
+                                <button
+                                  onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                                  className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white transition-all text-charcoal/40"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <span className="text-xs font-bold text-charcoal w-4 text-center">{item.quantity}</span>
+                                <button
+                                  onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                                  className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white transition-all text-charcoal/40"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                              </div>
+                              <p className="text-sm font-bold text-charcoal">
+                                {isTest ? "Free" : formatPrice(price * item.quantity)}
+                              </p>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
                 </ul>
               )}
             </div>
@@ -146,7 +166,7 @@ export function CartSidebar() {
                   <span className="font-bold text-charcoal text-lg">{formatPrice(total)}</span>
                 </div>
                 <p className="flex items-center gap-1.5 text-xs text-forest/70">
-                  <Leaf className="w-3 h-3" /> Free delivery on orders over CHF 49
+                  <Leaf className="w-3 h-3" /> Free delivery on orders over BDT 5000
                 </p>
                 <Link
                   href="/checkout"

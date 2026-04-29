@@ -11,9 +11,8 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { label: "Fruit Boxes",      href: "/fruits" },
   { label: "Catering",         href: "/catering" },
-  { label: "Corporate Gifts",  href: "/gifts" },
+  { label: "Free Test Box",    href: "/test-order" },
   { label: "About",            href: "/about" },
-  { label: "Contact",          href: "/contact" },
 ];
 
 export function Navbar() {

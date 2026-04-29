@@ -11,12 +11,12 @@ interface CartStore {
   closeCart: () => void;
   toggleCart: () => void;
 
-  addItem: (product: Product, isSubscription?: boolean, frequency?: SubscriptionFrequency) => void;
+  addItem: (product: Product, purchaseType?: PurchaseType, frequency?: SubscriptionFrequency) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
 
-  // Computed helpers (called as functions so they stay reactive)
+  // Computed helpers
   totalItems: () => number;
   subtotal: () => number;
 }
@@ -31,19 +31,35 @@ export const useCartStore = create<CartStore>()(
       closeCart: () => set({ isOpen: false }),
       toggleCart: () => set((s) => ({ isOpen: !s.isOpen })),
 
-      addItem: (product, isSubscription = false, frequency = "weekly") => {
+      addItem: (product, purchaseType = "onetime", frequency = "weekly") => {
         set((state) => {
-          const existing = state.items.find((i) => i.product.id === product.id);
+          // We distinguish items not just by ID but also by purchase type
+          const existing = state.items.find(
+            (i) => i.product.id === product.id && i.purchaseType === purchaseType
+          );
+
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+                i.product.id === product.id && i.purchaseType === purchaseType
+                  ? { ...i, quantity: i.quantity + 1 }
+                  : i
               ),
               isOpen: true,
             };
           }
+
+          // Limit test orders to 1 per item
+          if (purchaseType === "test") {
+            const hasTest = state.items.some(i => i.purchaseType === "test");
+            if (hasTest) {
+              // Optionally show a message or just don't add
+              return { isOpen: true };
+            }
+          }
+
           return {
-            items: [...state.items, { product, quantity: 1, isSubscription, frequency }],
+            items: [...state.items, { product, quantity: 1, purchaseType, frequency }],
             isOpen: true,
           };
         });
@@ -70,7 +86,9 @@ export const useCartStore = create<CartStore>()(
 
       subtotal: () =>
         get().items.reduce((sum, i) => {
-          const price = i.isSubscription && i.frequency
+          if (i.purchaseType === "test") return sum; // Free test order
+          
+          const price = i.purchaseType === "subscription" && i.frequency
             ? i.product.subscriptionPrices[i.frequency]
             : i.product.price;
           return sum + price * i.quantity;

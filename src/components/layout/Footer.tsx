@@ -43,12 +43,12 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-white/55 text-sm leading-relaxed max-w-xs mb-6">
-              Fresh, sustainable workplace food delivered before your team arrives. Proudly sourcing from Swiss &amp; regional farms.
+              Fresh, sustainable workplace food delivered before your team arrives. Proudly sourcing from local Bangladeshi farms.
             </p>
             <ul className="space-y-2 text-sm text-white/50">
-              <li className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-sage shrink-0" />Technoparkstrasse 1, 8005 Zürich</li>
-              <li className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-sage shrink-0" />+41 44 000 00 00</li>
-              <li className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-sage shrink-0" />hello@greencrate.ch</li>
+              <li className="flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-sage shrink-0" />Gulshan 1, Dhaka 1212, Bangladesh</li>
+              <li className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-sage shrink-0" />+880 1700 000000</li>
+              <li className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-sage shrink-0" />hello@greencrate.com.bd</li>
             </ul>
             <div className="flex gap-3 mt-6">
               {SOCIAL.map(({ icon: Icon, label, href }) => (
@@ -93,7 +93,7 @@ export function Footer() {
 
       <div className="border-t border-white/8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/35">
-          <p>© {new Date().getFullYear()} GreenCrate AG. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} GreenCrate Ltd. All rights reserved.</p>
           <ul className="flex items-center gap-4">
             {LINKS.legal.map((l) => (
               <li key={l.label}><Link href={l.href} className="hover:text-white/60 transition-colors">{l.label}</Link></li>

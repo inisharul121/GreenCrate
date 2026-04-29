@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { testimonials } from "@/lib/products";
 
-const LOGOS = ["Zurich Financial Group","Helvetia Tech","Alpine Ventures","Swiss Digital AG","Zuri Workspace"];
+const LOGOS = ["Grameenphone", "Pathao", "BRAC", "Bkash", "BSRM"];
 
 export function Testimonials() {
   const [idx, setIdx] = useState(0);

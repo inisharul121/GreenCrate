@@ -111,6 +111,14 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-forest to-sage;
   }
 
+  .bg-hero-gradient {
+    background: radial-gradient(circle at 100% 0%, #1B4332 0%, #081C15 100%);
+  }
+
+  .bg-sage-gradient {
+    @apply bg-gradient-to-br from-forest via-sage to-sage-light;
+  }
+
   .hero-blur {
     backdrop-filter: blur(120px);
   }

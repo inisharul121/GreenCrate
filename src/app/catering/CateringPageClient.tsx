@@ -3,59 +3,70 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { LunchBagSection } from "@/components/catering/LunchBagSection";
 import type { Product } from "@/types";
 
 const TABS = ["All","Pastries","Bowls","Drinks","Platters"];
 
 export function CateringPageClient({ products }: { products: Product[] }) {
   const [tab, setTab] = useState("All");
-  const filtered = tab === "All" ? products : products.filter(p => p.subcategory?.toLowerCase() === tab.toLowerCase());
+  
+  // Filter out lunchbags from the main grid to show them in their own section
+  const mainProducts = products.filter(p => p.subcategory !== "lunchbags");
+  const filtered = tab === "All" ? mainProducts : mainProducts.filter(p => p.subcategory?.toLowerCase() === tab.toLowerCase());
 
   return (
-    <>
-      <section className="pt-28 pb-14 bg-hero-gradient">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.p initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:0.1}}
-            className="text-sage-light text-sm font-semibold uppercase tracking-widest mb-3">For every meeting</motion.p>
+    <div className="bg-[#FDFCF9] min-h-screen">
+      <section className="pt-32 pb-20 overflow-hidden relative">
+        <div className="absolute top-0 left-0 w-[40%] h-full bg-sage/5 -z-10 rounded-r-[5rem]" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <motion.p initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:0.1}}
+            className="text-forest text-xs font-bold uppercase tracking-[0.2em] mb-4">For every meeting</motion.p>
           <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
-            className="font-display text-5xl sm:text-6xl font-bold text-white mb-4">Meeting Catering</motion.h1>
+            className="font-display text-6xl sm:text-7xl font-bold text-charcoal mb-6 leading-tight">
+            Meeting <span className="text-forest italic font-serif">Catering</span>
+          </motion.h1>
           <motion.p initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.3}}
-            className="text-white/60 text-lg max-w-xl mx-auto">
-            Fresh pastries, power bowls, platters, and artisan drinks. Delivered before your meeting starts.
+            className="text-charcoal/50 text-xl max-w-2xl mx-auto mb-4">
+            Fresh pastries, power bowls, and artisan platters. Delivered with care to your office door.
           </motion.p>
+          
+          <div className="flex flex-wrap justify-center gap-6 mt-10">
+            <p className="text-xs font-bold text-forest uppercase tracking-widest bg-forest/5 px-4 py-2 rounded-full border border-forest/10">⚡ Same-day delivery</p>
+            <p className="text-xs font-bold text-forest uppercase tracking-widest bg-forest/5 px-4 py-2 rounded-full border border-forest/10">🥗 Vegan & Vegan options</p>
+            <p className="text-xs font-bold text-forest uppercase tracking-widest bg-forest/5 px-4 py-2 rounded-full border border-forest/10">📦 Min. 5 people</p>
+          </div>
         </div>
       </section>
 
-      {/* Info strip */}
-      <div className="bg-sage/10 border-b border-sage/15 py-3 text-center">
-        <p className="text-sm text-forest font-medium">⚡ Same-day delivery available · Min. 5 people · Vegetarian & vegan options</p>
-      </div>
-
-      {/* Category tabs */}
-      <section className="sticky top-16 z-30 bg-white/90 backdrop-blur-md border-b border-sage/10 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-2 flex-wrap">
-          {TABS.map(t => (
-            <button key={t} onClick={() => setTab(t)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
-                tab===t ? "bg-forest text-white" : "bg-cream text-charcoal/60 hover:bg-cream-dark"
-              }`}>
-              {t}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <section className="py-16 bg-cream">
+      {/* Main Catalog */}
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Category tabs */}
+          <div className="flex items-center gap-3 overflow-x-auto pb-4 mb-12 scrollbar-hide border-b border-sage/10">
+            {TABS.map(t => (
+              <button key={t} onClick={() => setTab(t)}
+                className={`px-8 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                  tab===t ? "bg-charcoal text-white shadow-lg" : "bg-white text-charcoal/40 hover:text-charcoal border border-sage/10"
+                }`}>
+                {t}
+              </button>
+            ))}
+          </div>
+
+          <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filtered.map(p => (
-              <motion.div key={p.id} layout initial={{opacity:0,scale:0.96}} animate={{opacity:1,scale:1}}>
+              <motion.div key={p.id} layout initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}}>
                 <ProductCard product={p} />
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
-    </>
+
+      {/* LunchBag Section */}
+      <LunchBagSection products={products} />
+    </div>
   );
 }
