@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Filter, SlidersHorizontal, Info } from "lucide-react";
+import { Filter, SlidersHorizontal, Info, Leaf } from "lucide-react";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { OfferTiers } from "@/components/fruits/OfferTiers";
 import type { Product, SubscriptionFrequency, PurchaseType } from "@/types";

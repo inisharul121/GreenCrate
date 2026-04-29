@@ -1,0 +1,94 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { 
+  User, 
+  Bell, 
+  Lock, 
+  Globe, 
+  Save,
+  Camera
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export default function UserSettingsPage() {
+  return (
+    <div className="space-y-10">
+      <div>
+        <h2 className="text-3xl font-display font-bold text-charcoal">Account Settings</h2>
+        <p className="text-charcoal/40 font-medium italic">Update your personal info and notification preferences.</p>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-10">
+        {/* Left: Nav */}
+        <div className="lg:col-span-1 space-y-2">
+          <SettingsTab icon={User} label="Profile Info" active />
+          <SettingsTab icon={Bell} label="Notifications" />
+          <SettingsTab icon={Lock} label="Security" />
+          <SettingsTab icon={Globe} label="Region & Language" />
+        </div>
+
+        {/* Right: Form */}
+        <div className="lg:col-span-2 space-y-8">
+          <div className="bg-white rounded-[3rem] p-10 shadow-premium border border-sage/5">
+            <div className="flex items-center gap-6 mb-10 pb-10 border-b border-sage/5">
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-full bg-forest/5 flex items-center justify-center text-forest text-2xl font-bold border-2 border-dashed border-forest/20">
+                  NC
+                </div>
+                <button className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-forest text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                  <Camera className="w-4 h-4" />
+                </button>
+              </div>
+              <div>
+                <h3 className="text-xl font-display font-bold text-charcoal">Nina Chowdhury</h3>
+                <p className="text-sm text-charcoal/40">nina@company.com.bd</p>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-6">
+              <Input label="Full Name" placeholder="Nina Chowdhury" />
+              <Input label="Work Email" placeholder="nina@company.com.bd" />
+              <div className="sm:col-span-2">
+                <Input label="Company" placeholder="Grameenphone Ltd" />
+              </div>
+              <Input label="Phone Number" placeholder="+880 1700 000000" />
+              <Input label="Job Title" placeholder="Operations Manager" />
+            </div>
+
+            <div className="mt-10 pt-10 border-t border-sage/5 flex justify-end">
+              <button className="btn-primary py-4 px-10 shadow-xl shadow-forest/10">
+                <Save className="w-5 h-5" /> Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsTab({ icon: Icon, label, active }: any) {
+  return (
+    <button className={cn(
+      "w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold text-sm transition-all",
+      active ? "bg-forest text-white shadow-lg shadow-forest/10" : "text-charcoal/40 hover:bg-forest/5 hover:text-forest"
+    )}>
+      <Icon className="w-5 h-5" />
+      {label}
+    </button>
+  );
+}
+
+function Input({ label, placeholder }: any) {
+  return (
+    <div>
+      <label className="block text-xs font-bold text-charcoal/30 uppercase tracking-widest mb-2 ml-1">{label}</label>
+      <input 
+        type="text" 
+        placeholder={placeholder}
+        className="w-full px-6 py-4 rounded-2xl bg-cream border-2 border-sage/5 text-charcoal font-medium focus:outline-none focus:border-forest/30 transition-all"
+      />
+    </div>
+  );
+}
