@@ -28,15 +28,21 @@ export function FruitsPageClient({ products }: { products: Product[] }) {
         <div className="absolute top-0 right-0 w-[40%] h-full bg-sage/5 -z-10 rounded-l-[5rem]" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <motion.p initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:0.1}}
-            className="text-forest text-xs font-bold uppercase tracking-[0.2em] mb-4">Fresh from the farm</motion.p>
-          <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
-            className="font-display text-6xl sm:text-7xl font-bold text-charcoal mb-6 leading-tight">
-            Our Fruit <span className="text-forest italic font-serif">Boxes</span>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-forest/5 border border-forest/10 text-forest text-[10px] font-bold uppercase tracking-[0.2em] mb-8"
+          >
+            <Leaf className="w-3 h-3" /> Fresh from local BD farms
+          </motion.div>
+          
+          <motion.h1 initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.1}}
+            className="font-display text-6xl sm:text-7xl font-bold text-charcoal mb-6 leading-[1.1]">
+            Premium Fruit <span className="text-forest italic font-serif">Boxes</span>
           </motion.h1>
-          <motion.p initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.3}}
-            className="text-charcoal/50 text-xl max-w-2xl mx-auto mb-12">
-            Seasonal goodness delivered straight to your desk. Choose the plan that fits your team's rhythm.
+          <motion.p initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
+            className="text-charcoal/50 text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+            Sourced from the best orchards in Rajshahi and beyond. Delivered fresh to your office before your team arrives.
           </motion.p>
         </div>
 
@@ -113,6 +119,28 @@ export function FruitsPageClient({ products }: { products: Product[] }) {
               ))}
             </motion.div>
           )}
+        </div>
+      </section>
+      {/* How it Works */}
+      <section className="py-24 bg-white border-t border-sage/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-4xl font-bold text-charcoal">How it <span className="text-forest italic">works</span></h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              { step: "01", title: "Pick your box", desc: "Choose from our curated seasonal fruit boxes or create a custom plan." },
+              { step: "02", title: "Set schedule", desc: "Select a one-time order or save 15% with a flexible weekly subscription." },
+              { step: "03", title: "Morning delivery", desc: "Our team delivers fresh to your office before 8 AM. Enjoy the energy!" },
+            ].map((s, i) => (
+              <div key={i} className="relative p-8 rounded-[2.5rem] bg-cream border border-sage/5 group hover:bg-forest/5 transition-colors">
+                <span className="absolute -top-6 left-8 text-6xl font-display font-black text-forest/5 group-hover:text-forest/10 transition-colors">{s.step}</span>
+                <h3 className="font-display font-bold text-xl text-charcoal mb-3 relative z-10">{s.title}</h3>
+                <p className="text-charcoal/50 text-sm leading-relaxed relative z-10">{s.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>

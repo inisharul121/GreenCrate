@@ -1,30 +1,24 @@
 import type { DeliveryZone } from "@/types";
 
 const ZONES: DeliveryZone[] = [
-  { zip: "8001", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8002", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8003", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8004", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8005", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8006", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8008", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8032", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8048", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "8050", city: "Zürich",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
-  { zip: "3000", city: "Bern",          available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "3001", city: "Bern",          available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "3011", city: "Bern",          available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "3012", city: "Bern",          available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "4000", city: "Basel",         available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "4001", city: "Basel",         available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "4051", city: "Basel",         available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "1000", city: "Lausanne",      available: true,  nextDelivery: "In 3 days, by 8:00 AM", cutoffTime: "Today 10:00" },
-  { zip: "1200", city: "Geneva",        available: true,  nextDelivery: "In 3 days, by 8:00 AM", cutoffTime: "Today 10:00" },
-  { zip: "1201", city: "Geneva",        available: true,  nextDelivery: "In 3 days, by 8:00 AM", cutoffTime: "Today 10:00" },
-  { zip: "6000", city: "Lucerne",       available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "6003", city: "Lucerne",       available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
-  { zip: "9000", city: "St. Gallen",    available: false },
-  { zip: "7000", city: "Chur",          available: false },
+  // Dhaka Zones
+  { zip: "1212", city: "Gulshan, Dhaka",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
+  { zip: "1213", city: "Banani, Dhaka",         available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
+  { zip: "1230", city: "Uttara, Dhaka",         available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
+  { zip: "1205", city: "Dhanmondi, Dhaka",      available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
+  { zip: "1000", city: "Motijheel, Dhaka",      available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
+  { zip: "1208", city: "Tejgaon, Dhaka",        available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
+  { zip: "1206", city: "Cantonment, Dhaka",     available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
+  { zip: "1207", city: "Mohammadpur, Dhaka",    available: true,  nextDelivery: "Tomorrow, by 8:00 AM", cutoffTime: "Today 14:00" },
+  
+  // Chattogram Zones
+  { zip: "4000", city: "Agrabad, Chattogram",   available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
+  { zip: "4100", city: "GEC, Chattogram",       available: true,  nextDelivery: "In 2 days, by 8:00 AM", cutoffTime: "Today 12:00" },
+  
+  // Unavailable/Coming Soon
+  { zip: "6000", city: "Rajshahi",              available: false },
+  { zip: "7000", city: "Khulna",                available: false },
+  { zip: "3100", city: "Sylhet",                available: false },
 ];
 
 export async function checkDeliveryZone(zip: string): Promise<DeliveryZone | null> {

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Menu, X, Leaf } from "lucide-react";
+import { ShoppingCart, Menu, X, Leaf, User as UserIcon, LayoutDashboard, ShieldCheck, LogOut } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import { cn } from "@/lib/utils";
 
@@ -129,6 +129,46 @@ export function Navbar() {
             >
               Order Now
             </Link>
+
+            {/* Account Dropdown */}
+            <div className="relative group hidden sm:block">
+              <button
+                aria-label="Account"
+                className={cn(
+                  "flex items-center justify-center w-10 h-10 rounded-full transition-all duration-150",
+                  scrolled || !isHome
+                    ? "text-charcoal hover:bg-forest/8 hover:text-forest"
+                    : "text-white hover:bg-white/15"
+                )}
+              >
+                <motion.div
+                  whileHover={{ rotate: 5 }}
+                  className="w-10 h-10 flex items-center justify-center"
+                >
+                  <UserIcon className="w-5 h-5" />
+                </motion.div>
+              </button>
+              
+              {/* Dropdown Menu */}
+              <div className="absolute right-0 mt-1 w-56 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
+                <div className="bg-white rounded-3xl shadow-2xl border border-sage/10 p-3 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-sage/5 mb-2">
+                    <p className="text-xs font-bold text-charcoal/30 uppercase tracking-widest">Signed in as</p>
+                    <p className="text-sm font-bold text-charcoal truncate">Nina Chowdhury</p>
+                  </div>
+                  <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-medium text-charcoal/70 hover:bg-forest/5 hover:text-forest transition-colors">
+                    <LayoutDashboard className="w-4 h-4" /> User Dashboard
+                  </Link>
+                  <Link href="/admin" className="flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-medium text-charcoal/70 hover:bg-forest/5 hover:text-forest transition-colors">
+                    <ShieldCheck className="w-4 h-4" /> Admin Dashboard
+                  </Link>
+                  <div className="h-px bg-sage/5 my-2" />
+                  <button className="flex items-center gap-3 w-full px-4 py-2.5 rounded-2xl text-sm font-medium text-rose-500 hover:bg-rose-50 transition-colors">
+                    <LogOut className="w-4 h-4" /> Sign Out
+                  </button>
+                </div>
+              </div>
+            </div>
 
             {/* Hamburger */}
             <button

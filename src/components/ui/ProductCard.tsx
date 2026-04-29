@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { ShoppingCart, Star, Leaf } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import { formatPrice, cn } from "@/lib/utils";
@@ -43,44 +44,48 @@ export function ProductCard({ product, purchaseType = "onetime", frequency = "we
       aria-label={product.name}
     >
       {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-cream/30">
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
-          className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-        />
-        
-        {/* Badges */}
-        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-          {product.badges.map((badge) => (
-            <span
-              key={badge}
-              className={cn("px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border", BADGE_STYLES[badge] ?? "bg-white/90 text-charcoal/60 border-white")}
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
+      <Link href={`/product/${product.id}`}>
+        <div className="relative aspect-square overflow-hidden bg-cream/30 cursor-pointer">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
+            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+          />
+          
+          {/* Badges */}
+          <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+            {product.badges.map((badge) => (
+              <span
+                key={badge}
+                className={cn("px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border", BADGE_STYLES[badge] ?? "bg-white/90 text-charcoal/60 border-white")}
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
 
-        {/* Purchase Type Badge */}
-        <div className="absolute bottom-4 right-4">
-          <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-2xl shadow-sm border border-white flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-forest animate-pulse" />
-            <span className="text-[10px] font-bold text-charcoal uppercase tracking-widest">
-              {purchaseType === "test" ? "Trial" : purchaseType}
-            </span>
+          {/* Purchase Type Badge */}
+          <div className="absolute bottom-4 right-4">
+            <div className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-2xl shadow-sm border border-white flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-forest animate-pulse" />
+              <span className="text-[10px] font-bold text-charcoal uppercase tracking-widest">
+                {purchaseType === "test" ? "Trial" : purchaseType}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="flex flex-col flex-1 p-8">
         <div className="mb-4">
-          <h3 className="font-display font-bold text-charcoal text-2xl leading-tight mb-2 group-hover:text-forest transition-colors">
-            {product.name}
-          </h3>
+          <Link href={`/product/${product.id}`}>
+            <h3 className="font-display font-bold text-charcoal text-2xl leading-tight mb-2 group-hover:text-forest transition-colors cursor-pointer">
+              {product.name}
+            </h3>
+          </Link>
           <p className="text-sm text-charcoal/40 leading-relaxed line-clamp-2">{product.description}</p>
         </div>
 

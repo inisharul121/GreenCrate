@@ -31,7 +31,7 @@ export default function AboutPage() {
             We believe workplaces<br />deserve better food
           </h1>
           <p className="text-white/60 text-lg max-w-2xl mx-auto">
-            Founded in 2020 in Zürich, GreenCrate started with a simple idea: everyone deserves access to fresh, quality food at work — not vending machine snacks.
+            Founded in 2020 in Dhaka, GreenCrate started with a simple idea: everyone deserves access to fresh, quality food at work — not vending machine snacks.
           </p>
         </div>
       </section>
@@ -98,9 +98,9 @@ export default function AboutPage() {
           <h2 className="font-display text-4xl font-bold text-charcoal mb-10">The team</h2>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
-              { name:"Nina Keller",     role:"Co-founder & CEO",       initial:"NK", color:"#2D6A4F" },
-              { name:"Marc Zimmermann", role:"Head of Logistics",      initial:"MZ", color:"#52B788" },
-              { name:"Sarah Hofmann",   role:"Head of Partnerships",   initial:"SH", color:"#40916C" },
+              { name:"Nina Chowdhury",  role:"Co-founder & CEO",       initial:"NC", color:"#2D6A4F" },
+              { name:"Ariful Islam",    role:"Head of Logistics",      initial:"AI", color:"#52B788" },
+              { name:"Sultana Ahmed",   role:"Head of Partnerships",   initial:"SA", color:"#40916C" },
             ].map(({ name, role, initial, color }) => (
               <div key={name} className="bg-white rounded-3xl p-8 text-center shadow-card">
                 <div className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4"

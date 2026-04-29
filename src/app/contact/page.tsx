@@ -5,8 +5,14 @@ import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle2 } from "lucide-react";
 
 const OFFICES = [
-  { city: "Zürich (HQ)",  address: "Technoparkstrasse 1, 8005 Zürich", phone: "+41 44 000 00 00", hours: "Mon–Fri 7:00–18:00" },
-  { city: "Bern",         address: "Effingerstrasse 1, 3008 Bern",     phone: "+41 31 000 00 00", hours: "Mon–Fri 8:00–17:00" },
+  { city: "Dhaka (HQ)", address: "House 12, Road 5, Gulshan 1, Dhaka 1212", phone: "+880 2 000 00 00", hours: "Sat–Thu 9:00–19:00" },
+  { city: "Chattogram", address: "Agrabad C/A, Chattogram", phone: "+880 31 000 00 00", hours: "Sat–Thu 9:00–18:00" },
+];
+
+const FAQS = [
+  { q: "Where do you deliver?", a: "We currently deliver to all major business districts in Dhaka and Chattogram." },
+  { q: "What is the minimum order?", a: "For catering, the minimum order is for 5 people. Fruit boxes have no minimum." },
+  { q: "Can I change my subscription?", a: "Yes! You can pause, skip, or modify your subscription anytime from your dashboard." },
 ];
 
 export default function ContactPage() {
@@ -53,18 +59,18 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <label htmlFor="last-name" className="block text-sm font-semibold text-charcoal mb-1.5">Last name</label>
-                      <input id="last-name" type="text" required placeholder="Keller"
+                      <input id="last-name" type="text" required placeholder="Chowdhury"
                         className="w-full px-4 py-3 rounded-2xl border-2 border-sage/15 bg-cream text-charcoal text-sm focus:outline-none focus:border-forest/50 transition" />
                     </div>
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-semibold text-charcoal mb-1.5">Work email</label>
-                    <input id="email" type="email" required placeholder="nina@company.ch"
+                    <input id="email" type="email" required placeholder="nina@company.com.bd"
                       className="w-full px-4 py-3 rounded-2xl border-2 border-sage/15 bg-cream text-charcoal text-sm focus:outline-none focus:border-forest/50 transition" />
                   </div>
                   <div>
                     <label htmlFor="company" className="block text-sm font-semibold text-charcoal mb-1.5">Company</label>
-                    <input id="company" type="text" placeholder="Helvetia Tech AG"
+                    <input id="company" type="text" placeholder="Grameenphone Ltd"
                       className="w-full px-4 py-3 rounded-2xl border-2 border-sage/15 bg-cream text-charcoal text-sm focus:outline-none focus:border-forest/50 transition" />
                   </div>
                   <div>
@@ -99,8 +105,8 @@ export default function ContactPage() {
                 <Mail className="w-4 h-4 text-forest" /> Direct contact
               </h3>
               <ul className="space-y-3 text-sm text-charcoal/65">
-                <li className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-sage shrink-0" />hello@greencrate.ch</li>
-                <li className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-sage shrink-0" />+41 44 000 00 00</li>
+                <li className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-sage shrink-0" />hello@greencrate.com.bd</li>
+                <li className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-sage shrink-0" />+880 2 000 00 00</li>
               </ul>
             </div>
 
@@ -117,8 +123,30 @@ export default function ContactPage() {
 
             <div className="rounded-3xl bg-forest/6 border-2 border-forest/15 p-5">
               <p className="text-sm font-semibold text-forest mb-1">Enterprise & bulk orders</p>
-              <p className="text-xs text-charcoal/55">For 50+ employees or custom requirements, email us at <span className="text-forest font-medium">enterprise@greencrate.ch</span></p>
+              <p className="text-xs text-charcoal/55">For 50+ employees or custom requirements, email us at <span className="text-forest font-medium">enterprise@greencrate.com.bd</span></p>
             </div>
+          </div>
+        </div>
+      </section>
+      <section className="py-24 bg-white border-t border-sage/10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-4xl font-bold text-charcoal">Frequently Asked <span className="text-forest italic">Questions</span></h2>
+          </div>
+          <div className="space-y-6">
+            {FAQS.map((faq, i) => (
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="p-8 rounded-[2rem] bg-cream border border-sage/5 hover:bg-cream-dark transition-colors"
+              >
+                <h3 className="font-display font-bold text-lg text-charcoal mb-3">{faq.q}</h3>
+                <p className="text-charcoal/50 leading-relaxed">{faq.a}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
