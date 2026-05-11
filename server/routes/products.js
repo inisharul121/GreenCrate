@@ -125,6 +125,14 @@ router.get('/:id', async (req, res) => {
     const [products] = await pool.query('SELECT * FROM products WHERE id = ?', [req.params.id]);
     if (products.length === 0) return res.status(404).json({ message: 'Product not found' });
     
+    const product = products[0];
+    const [subPrices] = await pool.query('SELECT frequency, price FROM subscription_prices WHERE product_id = ?', [product.id]);
+    
+    const pricesMap = {};
+    subPrices.forEach(sp => {
+      pricesMap[sp.frequency] = sp.price;
+    });
+
     // Map DB fields to Frontend expected fields
     const formattedProduct = {
       ...product,
