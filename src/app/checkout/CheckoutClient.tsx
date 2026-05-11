@@ -13,25 +13,51 @@ import {
   Building,
   Smartphone
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import { formatPrice, cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 export function CheckoutClient() {
-  const { items, total, clearCart } = useCartStore();
+  const { items, subtotal, clearCart } = useCartStore();
+  const total = subtotal();
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const router = useRouter();
 
-  const handleCompleteOrder = () => {
+  const handleCompleteOrder = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
+    try {
+      const orderId = `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      const orderData = {
+        id: orderId,
+        totalAmount: subtotal(),
+        items: items.map(item => ({
+          product: { id: item.product.id },
+          quantity: item.quantity,
+          purchaseType: item.purchaseType,
+          frequency: item.frequency,
+          price: (item.purchaseType === "test" ? 0 : (
+            item.purchaseType === "subscription" && item.frequency
+              ? item.product.subscriptionPrices[item.frequency]
+              : item.product.price
+          ))
+        }))
+      };
+
+      await api.orders.create(orderData);
+      
       setIsProcessing(false);
       setIsSuccess(true);
       clearCart();
-    }, 2000);
+    } catch (error) {
+      console.error("Order failed:", error);
+      setIsProcessing(false);
+      alert("Order failed. Please try again.");
+    }
   };
 
   if (isSuccess) {
@@ -47,7 +73,7 @@ export function CheckoutClient() {
           </div>
           <h1 className="text-4xl font-display font-bold text-charcoal mb-4">Order Placed!</h1>
           <p className="text-charcoal/50 text-lg mb-10">
-            Thank you for your order. We'll send a confirmation email with delivery details shortly.
+            Thank you for your order. We&apos;ll send a confirmation email with delivery details shortly.
           </p>
           <div className="space-y-4">
             <Link href="/dashboard/orders" className="btn-primary w-full justify-center py-4">
@@ -226,9 +252,9 @@ export function CheckoutClient() {
                   <p className="text-charcoal/30 font-medium italic">Your cart is empty.</p>
                 ) : (
                   items.map((item) => (
-                    <div key={item.id + item.purchaseType} className="flex gap-4">
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-cream/30 shrink-0 border border-sage/5">
-                        <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                    <div key={item.product.id + item.purchaseType} className="flex gap-4">
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-cream/30 shrink-0 border border-sage/5 relative">
+                        <Image src={item.product.image} alt={item.product.name} fill className="object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-charcoal truncate">{item.product.name}</h4>
@@ -238,7 +264,13 @@ export function CheckoutClient() {
                         <p className="text-xs text-charcoal/40 mt-1">Qty: {item.quantity}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-charcoal">{formatPrice(item.price * item.quantity)}</p>
+                        <p className="font-bold text-charcoal">
+                          {formatPrice((item.purchaseType === "test" ? 0 : (
+                            item.purchaseType === "subscription" && item.frequency
+                              ? item.product.subscriptionPrices[item.frequency]
+                              : item.product.price
+                          )) * item.quantity)}
+                        </p>
                       </div>
                     </div>
                   ))

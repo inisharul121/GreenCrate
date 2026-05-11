@@ -22,7 +22,5 @@ const ZONES: DeliveryZone[] = [
 ];
 
 export async function checkDeliveryZone(zip: string): Promise<DeliveryZone | null> {
-  // Simulate network latency
-  await new Promise((r) => setTimeout(r, 600));
   return ZONES.find((z) => z.zip === zip.trim()) ?? null;
 }

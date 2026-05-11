@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Search, 
@@ -14,26 +14,59 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { formatPrice, cn } from "@/lib/utils";
-
-const ALL_ORDERS = [
-  { id: "ORD-7291", customer: "Grameenphone Ltd", items: "Classic Fruit Box (x4)", total: 12450, status: "Delivered", date: "Apr 29, 2026", payment: "Bkash" },
-  { id: "ORD-7290", customer: "Pathao", items: "Meeting Lunchbag (x10)", total: 34900, status: "Processing", date: "Apr 29, 2026", payment: "Card" },
-  { id: "ORD-7289", customer: "BRAC", items: "Corporate Gift Box (x25)", total: 82500, status: "Shipped", date: "Apr 28, 2026", payment: "Invoice" },
-  { id: "ORD-7288", customer: "Bkash", items: "Sample Fruit Box (x1)", total: 0, status: "Delivered", date: "Apr 28, 2026", payment: "Free" },
-  { id: "ORD-7287", customer: "BSRM", items: "Executive Lunchbag (x8)", total: 18900, status: "Delivered", date: "Apr 27, 2026", payment: "Card" },
-  { id: "ORD-7286", customer: "ShopUp", items: "Premium Fruit Box (x2)", total: 6980, status: "Processing", date: "Apr 27, 2026", payment: "Bkash" },
-  { id: "ORD-7285", customer: "Sheba.xyz", items: "Pastry Platter (x3)", total: 12600, status: "Delivered", date: "Apr 26, 2026", payment: "Card" },
-];
+import { api } from "@/lib/api";
 
 const STATUS_COLORS: Record<string, string> = {
   "Delivered": "bg-emerald-50 text-emerald-600 border-emerald-100",
   "Processing": "bg-amber-50 text-amber-600 border-amber-100",
   "Shipped": "bg-blue-50 text-blue-600 border-blue-100",
   "Cancelled": "bg-rose-50 text-rose-600 border-rose-100",
+  "pending": "bg-gray-50 text-gray-600 border-gray-100",
 };
 
 export default function AdminOrdersPage() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
+
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const data = await api.admin.getAllOrders();
+        setOrders(data);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrders();
+  }, []);
+
+  const filteredOrders = orders.filter(o => 
+    filter === "All" || o.status.toLowerCase() === filter.toLowerCase()
+  );
+
+  if (loading) return <div className="p-8 text-charcoal/40">Loading orders...</div>;
+
+  const exportCsv = () => {
+    const headers = ["Order ID", "Customer", "Date", "Status", "Total"];
+    const rows = filteredOrders.map((o) => [
+      o.id,
+      o.customer_name || "Guest",
+      new Date(o.created_at).toLocaleDateString(),
+      o.status,
+      o.total_amount,
+    ]);
+    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "orders-export.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="space-y-8">
@@ -47,7 +80,7 @@ export default function AdminOrdersPage() {
           <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-sage/10 text-charcoal font-bold text-sm hover:bg-cream transition-all">
             <Calendar className="w-4 h-4 text-forest" /> Today
           </button>
-          <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-forest text-white font-bold text-sm hover:bg-forest-light transition-all shadow-lg shadow-forest/10">
+          <button onClick={exportCsv} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-forest text-white font-bold text-sm hover:bg-forest-light transition-all shadow-lg shadow-forest/10">
             <Download className="w-4 h-4" /> Export CSV
           </button>
         </div>
@@ -55,7 +88,7 @@ export default function AdminOrdersPage() {
 
       {/* Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide border-b border-sage/10">
-        {["All", "Processing", "Shipped", "Delivered", "Cancelled"].map(s => (
+        {["All", "Pending", "Processing", "Shipped", "Delivered", "Cancelled"].map(s => (
           <button
             key={s}
             onClick={() => setFilter(s)}
@@ -82,13 +115,16 @@ export default function AdminOrdersPage() {
                 <th className="px-8 py-6">Customer / Items</th>
                 <th className="px-8 py-6">Date</th>
                 <th className="px-8 py-6">Status</th>
-                <th className="px-8 py-6">Payment</th>
                 <th className="px-8 py-6">Total</th>
                 <th className="px-8 py-6 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-sage/5">
-              {ALL_ORDERS.map((order, i) => (
+              {filteredOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-8 py-12 text-center text-charcoal/30 font-medium italic">No orders found matching this filter.</td>
+                </tr>
+              ) : filteredOrders.map((order, i) => (
                 <motion.tr 
                   key={order.id}
                   initial={{ opacity: 0, y: 10 }}
@@ -98,25 +134,27 @@ export default function AdminOrdersPage() {
                 >
                   <td className="px-8 py-6 text-sm font-black text-charcoal">{order.id}</td>
                   <td className="px-8 py-6">
-                    <p className="text-sm font-bold text-charcoal">{order.customer}</p>
-                    <p className="text-[10px] text-charcoal/40 font-medium truncate max-w-[200px] mt-1">{order.items}</p>
+                    <p className="text-sm font-bold text-charcoal">{order.customer_name || "Guest"}</p>
+                    <p className="text-[10px] text-charcoal/40 font-medium truncate max-w-[200px] mt-1">{order.items_summary}</p>
                   </td>
-                  <td className="px-8 py-6 text-sm text-charcoal/60 font-medium">{order.date}</td>
+                  <td className="px-8 py-6 text-sm text-charcoal/60 font-medium">{new Date(order.created_at).toLocaleDateString()}</td>
                   <td className="px-8 py-6">
                     <span className={cn(
                       "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                      STATUS_COLORS[order.status]
+                      STATUS_COLORS[order.status] || "bg-gray-50 text-gray-600 border-gray-100"
                     )}>
-                      {order.status === "Processing" && <Clock className="w-2.5 h-2.5 inline mr-1" />}
-                      {order.status === "Shipped" && <Truck className="w-2.5 h-2.5 inline mr-1" />}
-                      {order.status === "Delivered" && <CheckCircle2 className="w-2.5 h-2.5 inline mr-1" />}
+                      {order.status === "processing" && <Clock className="w-2.5 h-2.5 inline mr-1" />}
+                      {order.status === "shipped" && <Truck className="w-2.5 h-2.5 inline mr-1" />}
+                      {order.status === "delivered" && <CheckCircle2 className="w-2.5 h-2.5 inline mr-1" />}
                       {order.status}
                     </span>
                   </td>
-                  <td className="px-8 py-6 text-sm font-bold text-charcoal/40 uppercase tracking-widest">{order.payment}</td>
-                  <td className="px-8 py-6 text-sm font-bold text-forest">{formatPrice(order.total)}</td>
+                  <td className="px-8 py-6 text-sm font-bold text-forest">{formatPrice(order.total_amount)}</td>
                   <td className="px-8 py-6 text-right">
-                    <button className="p-2 rounded-xl bg-forest/5 text-forest hover:bg-forest hover:text-white transition-all shadow-sm">
+                    <button
+                      onClick={() => window.alert(`Order ${order.id}\n\n${order.items_summary || "No item summary available."}`)}
+                      className="p-2 rounded-xl bg-forest/5 text-forest hover:bg-forest hover:text-white transition-all shadow-sm"
+                    >
                       <Eye className="w-4 h-4" />
                     </button>
                   </td>

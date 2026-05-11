@@ -57,7 +57,7 @@ export function FeaturedProducts({ fruits, catering }: Props) {
 
         <motion.div key={tab} initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3 }}
           className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map(p => <ProductCard key={p.id} product={p} isSubscription={isSubscription} frequency={frequency} />)}
+          {products.map(p => <ProductCard key={p.id} product={p} purchaseType={isSubscription ? "subscription" : "onetime"} frequency={frequency} />)}
         </motion.div>
       </div>
     </section>

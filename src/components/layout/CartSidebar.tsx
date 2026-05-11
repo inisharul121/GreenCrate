@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { X, Plus, Minus, ShoppingBag, Trash2, Leaf } from "lucide-react";
 import { useCartStore } from "@/store/cart";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, cn } from "@/lib/utils";
 
 export function CartSidebar() {
   const { isOpen, closeCart, items, updateQuantity, removeItem, subtotal } = useCartStore();

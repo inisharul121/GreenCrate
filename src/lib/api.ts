@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
 export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_URL}${endpoint}`, {
@@ -21,6 +21,10 @@ export const api = {
   products: {
     getAll: () => apiFetch<any[]>('/products'),
     getById: (id: string) => apiFetch<any>(`/products/${id}`),
+    create: (productData: any) => apiFetch('/products', {
+      method: 'POST',
+      body: JSON.stringify(productData),
+    }),
     getByCategory: async (category: string) => {
       const all = await apiFetch<any[]>('/products');
       return all.filter(p => p.category_name === category);
@@ -49,5 +53,6 @@ export const api = {
     getRecentOrders: () => apiFetch<any[]>('/admin/recent-orders'),
     getAllOrders: () => apiFetch<any[]>('/admin/orders'),
     getCustomers: () => apiFetch<any[]>('/admin/customers'),
+    getSubscriptions: () => apiFetch<any[]>('/admin/subscriptions'),
   },
 };

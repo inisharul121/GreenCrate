@@ -1,15 +1,9 @@
 import { notFound } from "next/navigation";
-import { allProducts } from "@/lib/products";
 import { ProductDetailClient } from "./ProductDetailClient";
+import { api } from "@/lib/api";
 
-export async function generateStaticParams() {
-  return allProducts.map((product) => ({
-    id: product.id,
-  }));
-}
-
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const product = allProducts.find((p) => p.id === params.id);
+export default async function ProductPage({ params }: { params: { id: string } }) {
+  const product = await api.products.getById(params.id).catch(() => null);
 
   if (!product) {
     notFound();

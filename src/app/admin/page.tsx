@@ -1,39 +1,59 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { 
+import {
   DollarSign, 
   ShoppingBag, 
   Users, 
   Activity, 
   ArrowUpRight,
-  MoreVertical
+  MoreVertical,
+  Download
 } from "lucide-react";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { formatPrice } from "@/lib/utils";
-
-const RECENT_ORDERS = [
-  { id: "#ORD-7291", customer: "Grameenphone", items: 4, total: 12450, status: "Delivered", date: "Today, 10:45 AM" },
-  { id: "#ORD-7290", customer: "Pathao", items: 2, total: 3490, status: "Processing", date: "Today, 09:12 AM" },
-  { id: "#ORD-7289", customer: "BRAC", items: 12, total: 42000, status: "Shipped", date: "Yesterday" },
-  { id: "#ORD-7288", customer: "Bkash", items: 1, total: 0, status: "Test Order", date: "Yesterday" },
-  { id: "#ORD-7287", customer: "BSRM", items: 6, total: 18900, status: "Delivered", date: "2 days ago" },
-];
+import { api } from "@/lib/api";
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState<any>(null);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [statsData, ordersData] = await Promise.all([
+          api.admin.getStats(),
+          api.admin.getRecentOrders()
+        ]);
+        setStats(statsData);
+        setRecentOrders(ordersData);
+      } catch (error) {
+        console.error("Failed to fetch admin data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  if (loading) return <div className="p-8 text-charcoal/40">Loading dashboard...</div>;
+
   return (
     <div className="space-y-8">
       {/* Welcome */}
       <div>
         <h2 className="text-3xl font-display font-bold text-charcoal">Welcome back, Nina!</h2>
-        <p className="text-charcoal/40 font-medium">Here's what's happening with GreenCrate today.</p>
+        <p className="text-charcoal/40 font-medium">Here&apos;s what&apos;s happening with GreenCrate today.</p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           label="Total Revenue" 
-          value={formatPrice(452890)} 
+          value={formatPrice(stats?.revenue || 0)} 
           change="+12.5%" 
           trend="up" 
           icon={DollarSign} 
@@ -41,7 +61,7 @@ export default function AdminDashboard() {
         />
         <StatCard 
           label="Active Orders" 
-          value="142" 
+          value={stats?.activeOrders?.toString() || "0"} 
           change="+8.2%" 
           trend="up" 
           icon={ShoppingBag} 
@@ -49,15 +69,15 @@ export default function AdminDashboard() {
         />
         <StatCard 
           label="New Customers" 
-          value="24" 
+          value={stats?.newCustomers?.toString() || "0"} 
           change="-2.4%" 
           trend="down" 
           icon={Users} 
           color="amber" 
         />
         <StatCard 
-          label="Subscription Rate" 
-          value="84%" 
+          label="Total Products" 
+          value={stats?.totalProducts?.toString() || "0"} 
           change="+4.1%" 
           trend="up" 
           icon={Activity} 
@@ -71,9 +91,9 @@ export default function AdminDashboard() {
         <div className="lg:col-span-2 bg-white rounded-[2.5rem] p-8 shadow-premium border border-sage/5">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-display font-bold text-charcoal">Recent Orders</h3>
-            <button className="text-sm font-bold text-forest hover:underline flex items-center gap-1">
+            <Link href="/admin/orders" className="text-sm font-bold text-forest hover:underline flex items-center gap-1">
               View all <ArrowUpRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
 
           <div className="overflow-x-auto">
@@ -83,12 +103,15 @@ export default function AdminDashboard() {
                   <th className="pb-4">Order ID</th>
                   <th className="pb-4">Customer</th>
                   <th className="pb-4">Amount</th>
-                  <th className="pb-4">Status</th>
                   <th className="pb-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-sage/5">
-                {RECENT_ORDERS.map((order, i) => (
+                {recentOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-8 text-center text-charcoal/30 font-medium italic">No orders yet.</td>
+                  </tr>
+                ) : recentOrders.map((order, i) => (
                   <motion.tr 
                     key={order.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -98,24 +121,17 @@ export default function AdminDashboard() {
                   >
                     <td className="py-4 font-bold text-sm text-charcoal">{order.id}</td>
                     <td className="py-4">
-                      <p className="text-sm font-bold text-charcoal">{order.customer}</p>
-                      <p className="text-xs text-charcoal/30 font-medium">{order.date}</p>
+                      <p className="text-sm font-bold text-charcoal">{order.customer_name || "Guest"}</p>
+                      <p className="text-xs text-charcoal/30 font-medium">{new Date(order.created_at).toLocaleDateString()}</p>
                     </td>
-                    <td className="py-4 text-sm font-bold text-forest">{formatPrice(order.total)}</td>
-                    <td className="py-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        order.status === "Delivered" ? "bg-emerald-50 text-emerald-600" :
-                        order.status === "Processing" ? "bg-amber-50 text-amber-600" :
-                        order.status === "Shipped" ? "bg-blue-50 text-blue-600" :
-                        "bg-charcoal/5 text-charcoal/40"
-                      }`}>
-                        {order.status}
-                      </span>
-                    </td>
+                    <td className="py-4 text-sm font-bold text-forest">{formatPrice(order.total_amount)}</td>
                     <td className="py-4 text-right">
-                      <button className="w-8 h-8 rounded-lg flex items-center justify-center text-charcoal/30 hover:bg-white hover:text-charcoal transition-all">
+                      <Link
+                        href={`/admin/orders?highlight=${order.id}`}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-charcoal/30 hover:bg-white hover:text-charcoal transition-all"
+                      >
                         <MoreVertical className="w-4 h-4" />
-                      </button>
+                      </Link>
                     </td>
                   </motion.tr>
                 ))}
@@ -124,25 +140,26 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Popular Products Mock */}
+        {/* Quick Actions */}
         <div className="bg-white rounded-[2.5rem] p-8 shadow-premium border border-sage/5">
           <h3 className="text-xl font-display font-bold text-charcoal mb-8">Quick Actions</h3>
           <div className="grid gap-3">
-            {[
-              { label: "Add New Product", icon: ShoppingBag, color: "bg-forest text-white" },
-              { label: "Export Sales Report", icon: Activity, color: "bg-sage text-white" },
-              { label: "Manage Subscriptions", icon: Activity, color: "bg-amber text-charcoal" },
-              { label: "Update Delivery Zones", icon: Activity, color: "bg-charcoal text-white" },
+              {[
+              { label: "Add New Product", icon: ShoppingBag, color: "bg-forest text-white", href: "/admin/products" },
+                { label: "Export Sales Report", icon: Download, color: "bg-sage text-white", href: "/admin/orders?export=csv" },
+              { label: "Manage Subscriptions", icon: Activity, color: "bg-amber text-charcoal", href: "/admin/subscriptions" },
+                { label: "Update Delivery Zones", icon: Activity, color: "bg-charcoal text-white", href: "/admin/settings" },
             ].map((action) => (
-              <button 
+              <Link 
                 key={action.label}
+                href={action.href}
                 className="flex items-center gap-4 p-4 rounded-2xl border border-sage/10 hover:border-forest/30 hover:bg-forest/5 transition-all text-left group"
               >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${action.color}`}>
                   <action.icon className="w-5 h-5" />
                 </div>
                 <span className="text-sm font-bold text-charcoal group-hover:text-forest transition-colors">{action.label}</span>
-              </button>
+              </Link>
             ))}
           </div>
         </div>

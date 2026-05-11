@@ -16,6 +16,7 @@ import {
   Zap,
   Globe
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cart";
@@ -63,11 +64,13 @@ export function ProductDetailClient({ product }: { product: Product }) {
             transition={{ duration: 0.6 }}
             className="relative"
           >
-            <div className="aspect-square rounded-[3rem] overflow-hidden shadow-premium border border-sage/10 bg-white">
-              <img 
+            <div className="aspect-square rounded-[3rem] overflow-hidden shadow-premium border border-sage/10 bg-white relative">
+              <Image 
                 src={product.image} 
                 alt={product.name} 
-                className="w-full h-full object-cover"
+                fill
+                priority
+                className="object-cover"
               />
             </div>
             

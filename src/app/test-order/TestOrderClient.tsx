@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight, Check, ShieldCheck, Zap, Globe } from "lucide-react";
+import Image from "next/image";
 import { useCartStore } from "@/store/cart";
 import { fruits } from "@/lib/products";
 import Link from "next/link";
@@ -63,10 +64,11 @@ export function TestOrderClient() {
           >
             <div className="absolute inset-0 bg-sage/5 rounded-[5rem] rotate-6 scale-105" />
             <div className="relative aspect-[4/5] bg-white rounded-[5rem] overflow-hidden shadow-2xl border border-sage/10">
-              <img
+              <Image
                 src={sampleProduct.image}
                 alt="Classic Fruit Box"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent" />
               <div className="absolute bottom-12 left-12 right-12 text-white">

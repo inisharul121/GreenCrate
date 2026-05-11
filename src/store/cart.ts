@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { CartItem, Product, SubscriptionFrequency } from "@/types";
+import type { CartItem, Product, SubscriptionFrequency, PurchaseType } from "@/types";
 
 interface CartStore {
   items: CartItem[];
@@ -11,7 +11,7 @@ interface CartStore {
   closeCart: () => void;
   toggleCart: () => void;
 
-  addItem: (product: Product, purchaseType?: PurchaseType, frequency?: SubscriptionFrequency) => void;
+  addItem: (product: Product, purchaseType?: PurchaseType, frequency?: SubscriptionFrequency, quantity?: number) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -31,35 +31,34 @@ export const useCartStore = create<CartStore>()(
       closeCart: () => set({ isOpen: false }),
       toggleCart: () => set((s) => ({ isOpen: !s.isOpen })),
 
-      addItem: (product, purchaseType = "onetime", frequency = "weekly") => {
+      addItem: (product, purchaseType = "onetime", frequency = "weekly", quantity = 1) => {
         set((state) => {
           // We distinguish items not just by ID but also by purchase type
           const existing = state.items.find(
             (i) => i.product.id === product.id && i.purchaseType === purchaseType
           );
-
+    
           if (existing) {
             return {
               items: state.items.map((i) =>
                 i.product.id === product.id && i.purchaseType === purchaseType
-                  ? { ...i, quantity: i.quantity + 1 }
+                  ? { ...i, quantity: i.quantity + quantity }
                   : i
               ),
               isOpen: true,
             };
           }
-
+    
           // Limit test orders to 1 per item
           if (purchaseType === "test") {
             const hasTest = state.items.some(i => i.purchaseType === "test");
             if (hasTest) {
-              // Optionally show a message or just don't add
               return { isOpen: true };
             }
           }
-
+    
           return {
-            items: [...state.items, { product, quantity: 1, purchaseType, frequency }],
+            items: [...state.items, { product, quantity, purchaseType, frequency }],
             isOpen: true,
           };
         });

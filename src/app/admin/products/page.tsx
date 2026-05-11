@@ -1,33 +1,101 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Plus, 
   Search, 
-  Filter, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
+  X,
+  Edit,
+  Trash2,
   ExternalLink,
   Package,
   AlertCircle
 } from "lucide-react";
-import { allProducts } from "@/lib/products";
+import { api } from "@/lib/api";
 import { formatPrice, cn } from "@/lib/utils";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function AdminProductsPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("All");
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category_name: "fruits",
+    image: "",
+    weekly: "",
+    biweekly: "",
+    monthly: "",
+  });
+
+  async function fetchProducts() {
+    try {
+      const data = await api.products.getAll();
+      setProducts(data);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const categories = ["All", "Fruits", "Catering", "Gifts"];
   
-  const filteredProducts = allProducts.filter(p => {
+  const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filter === "All" || p.category.toLowerCase() === filter.toLowerCase();
+    const matchesFilter = filter === "All" || p.category_name.toLowerCase() === filter.toLowerCase();
     return matchesSearch && matchesFilter;
   });
+
+  if (loading) return <div className="p-8 text-charcoal/40">Loading products...</div>;
+
+  async function handleCreateProduct(e: React.FormEvent) {
+    e.preventDefault();
+    setCreateError("");
+    setCreating(true);
+    try {
+      await api.products.create({
+        name: newProduct.name,
+        description: newProduct.description,
+        price: Number(newProduct.price),
+        category_name: newProduct.category_name,
+        image: newProduct.image,
+        subscriptionPrices: {
+          weekly: newProduct.weekly ? Number(newProduct.weekly) : undefined,
+          biweekly: newProduct.biweekly ? Number(newProduct.biweekly) : undefined,
+          monthly: newProduct.monthly ? Number(newProduct.monthly) : undefined,
+        },
+      });
+      setShowCreateModal(false);
+      setNewProduct({
+        name: "",
+        description: "",
+        price: "",
+        category_name: "fruits",
+        image: "",
+        weekly: "",
+        biweekly: "",
+        monthly: "",
+      });
+      await fetchProducts();
+    } catch (error: any) {
+      setCreateError(error?.message || "Failed to create product");
+    } finally {
+      setCreating(false);
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -37,7 +105,10 @@ export default function AdminProductsPage() {
           <h2 className="text-3xl font-display font-bold text-charcoal">Inventory Management</h2>
           <p className="text-charcoal/40 font-medium">Manage your product catalog, pricing, and stock levels.</p>
         </div>
-        <button className="btn-primary py-3 px-6 shadow-xl hover:shadow-forest/20">
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="btn-primary py-3 px-6 shadow-xl hover:shadow-forest/20"
+        >
           <Plus className="w-5 h-5" /> Add New Product
         </button>
       </div>
@@ -97,8 +168,8 @@ export default function AdminProductsPage() {
                 >
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-cream/30 border border-sage/5">
-                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-cream/30 border border-sage/5 relative">
+                        <Image src={product.image} alt={product.name} fill className="object-cover" />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-charcoal">{product.name}</p>
@@ -108,15 +179,15 @@ export default function AdminProductsPage() {
                   </td>
                   <td className="px-8 py-5">
                     <span className="px-3 py-1 rounded-full bg-sage/10 text-forest text-[10px] font-bold uppercase tracking-wider">
-                      {product.category}
+                      {product.category_label}
                     </span>
                   </td>
                   <td className="px-8 py-5">
                     <p className="text-sm font-bold text-charcoal">{formatPrice(product.price)}</p>
-                    <p className="text-[10px] text-forest/50 font-bold uppercase">Sub: {formatPrice(product.subscriptionPrices.weekly)}</p>
+                    <p className="text-[10px] text-forest/50 font-bold uppercase">Sub: {formatPrice(product.subscriptionPrices?.weekly || 0)}</p>
                   </td>
                   <td className="px-8 py-5">
-                    {product.inStock ? (
+                    {product.in_stock ? (
                       <div className="flex items-center gap-1.5 text-emerald-600">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                         <span className="text-[10px] font-bold uppercase">In Stock</span>
@@ -153,6 +224,118 @@ export default function AdminProductsPage() {
           </table>
         </div>
       </div>
+
+      {showCreateModal ? (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-sage/10 p-6 md:p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-display font-bold text-charcoal">Add Product</h3>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="p-2 rounded-lg text-charcoal/40 hover:bg-sage/10"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateProduct} className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <input
+                  required
+                  placeholder="Product name"
+                  value={newProduct.name}
+                  onChange={(e) => setNewProduct((p) => ({ ...p, name: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-sage/20"
+                />
+                <select
+                  value={newProduct.category_name}
+                  onChange={(e) => setNewProduct((p) => ({ ...p, category_name: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-sage/20 bg-white"
+                >
+                  <option value="fruits">Fruits</option>
+                  <option value="catering">Catering</option>
+                  <option value="gifts">Gifts</option>
+                </select>
+              </div>
+
+              <textarea
+                placeholder="Description"
+                value={newProduct.description}
+                onChange={(e) => setNewProduct((p) => ({ ...p, description: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-sage/20 min-h-24"
+              />
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <input
+                  required
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Base price"
+                  value={newProduct.price}
+                  onChange={(e) => setNewProduct((p) => ({ ...p, price: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-sage/20"
+                />
+                <input
+                  placeholder="Image URL"
+                  value={newProduct.image}
+                  onChange={(e) => setNewProduct((p) => ({ ...p, image: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-sage/20"
+                />
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Weekly price"
+                  value={newProduct.weekly}
+                  onChange={(e) => setNewProduct((p) => ({ ...p, weekly: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-sage/20"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Biweekly price"
+                  value={newProduct.biweekly}
+                  onChange={(e) => setNewProduct((p) => ({ ...p, biweekly: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-sage/20"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Monthly price"
+                  value={newProduct.monthly}
+                  onChange={(e) => setNewProduct((p) => ({ ...p, monthly: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-sage/20"
+                />
+              </div>
+
+              {createError ? <p className="text-sm text-rose-500 font-medium">{createError}</p> : null}
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-5 py-2.5 rounded-xl border border-sage/20 text-charcoal/60 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="btn-primary px-6 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {creating ? "Creating..." : "Create Product"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

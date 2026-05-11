@@ -162,9 +162,9 @@ export default function UserSubscriptionsPage() {
                   )}
                   {sub.status === "paused" ? "Resume" : "Pause"}
                 </button>
-                <button className="flex items-center justify-center gap-2 py-3 rounded-2xl border border-sage/10 text-charcoal/50 font-bold text-xs hover:bg-cream transition-all group">
+                <Link href="/dashboard/settings" className="flex items-center justify-center gap-2 py-3 rounded-2xl border border-sage/10 text-charcoal/50 font-bold text-xs hover:bg-cream transition-all group">
                   <RefreshCw className="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-500" /> Modify
-                </button>
+                </Link>
               </div>
               <button
                 onClick={() => handleCancel(sub.id)}
@@ -186,7 +186,7 @@ export default function UserSubscriptionsPage() {
           <h4 className="text-2xl font-display font-bold text-charcoal mb-2">Need a custom plan?</h4>
           <p className="text-charcoal/50 leading-relaxed">For offices with more than 100 employees, we offer custom billing, dedicated account managers, and tailored produce selections.</p>
         </div>
-        <button className="btn-primary px-10 py-4 shadow-lg shadow-forest/10">Talk to Sales</button>
+        <Link href="/contact?topic=sales" className="btn-primary px-10 py-4 shadow-lg shadow-forest/10">Talk to Sales</Link>
       </div>
     </div>
   );

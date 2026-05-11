@@ -12,9 +12,9 @@ export function HeroSection() {
     >
       {/* Background blobs - adjusted for dark contrast */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-sage/10 blur-[120px]" />
-        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-forest/20 blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-sage/5 blur-[80px]" />
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-sage/10 blur-[64px]" />
+        <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-forest/20 blur-[48px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-sage/5 blur-[32px]" />
         {/* Grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.04]"

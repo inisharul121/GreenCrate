@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Search, 
@@ -12,16 +13,39 @@ import {
   Clock,
   ExternalLink
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const CUSTOMERS = [
-  { id: 1, name: "Ariful Islam", company: "Grameenphone Ltd", email: "arif@gp.com.bd", status: "Active", orders: 12, value: 42500, avatar: "AI" },
-  { id: 2, name: "Nina Chowdhury", company: "Pathao", email: "nina@pathao.com", status: "Active", orders: 8, value: 28900, avatar: "NC" },
-  { id: 3, name: "Rahat Ahmed", company: "ShopUp", email: "rahat@shopup.com.bd", status: "Inactive", orders: 3, value: 8400, avatar: "RA" },
-  { id: 4, name: "Sultana Ahmed", company: "BRAC", email: "sultana@brac.net", status: "Active", orders: 20, value: 105000, avatar: "SA" },
-];
+import { cn, formatPrice } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 export default function AdminCustomersPage() {
+  const [customers, setCustomers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    async function fetchCustomers() {
+      try {
+        const data = await api.admin.getCustomers();
+        setCustomers(data);
+      } catch (error) {
+        console.error("Failed to fetch customers:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCustomers();
+  }, []);
+
+  const filteredCustomers = customers.filter(c => 
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) return <div className="p-8 text-charcoal/40">Loading customers...</div>;
+
+  const emailAllHref = `mailto:?bcc=${encodeURIComponent(
+    filteredCustomers.map((c) => c.email).join(",")
+  )}&subject=${encodeURIComponent("GreenCrate Update")}`;
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -30,9 +54,9 @@ export default function AdminCustomersPage() {
           <p className="text-charcoal/40 font-medium italic">Manage relationships and monitor customer lifetime value.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-sage/10 text-charcoal font-bold text-sm hover:bg-cream transition-all">
+          <a href={emailAllHref} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border border-sage/10 text-charcoal font-bold text-sm hover:bg-cream transition-all">
             <Mail className="w-4 h-4 text-forest" /> Email All
-          </button>
+          </a>
         </div>
       </div>
 
@@ -40,7 +64,9 @@ export default function AdminCustomersPage() {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/30 group-focus-within:text-forest transition-colors" />
         <input 
           type="text" 
-          placeholder="Search by name, company, or email..." 
+          placeholder="Search by name or email..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full pl-11 pr-4 py-4 rounded-2xl bg-white border border-sage/10 focus:outline-none focus:border-forest/30 transition-all text-sm"
         />
       </div>
@@ -51,15 +77,18 @@ export default function AdminCustomersPage() {
             <thead>
               <tr className="bg-forest/5 text-[10px] font-bold text-charcoal/40 uppercase tracking-widest">
                 <th className="px-8 py-6">Customer</th>
-                <th className="px-8 py-6">Company</th>
-                <th className="px-8 py-6">Status</th>
+                <th className="px-8 py-6">Joined Date</th>
                 <th className="px-8 py-6 text-right">Orders</th>
                 <th className="px-8 py-6 text-right">Total Value</th>
                 <th className="px-8 py-6 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-sage/5">
-              {CUSTOMERS.map((c, i) => (
+              {filteredCustomers.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-8 py-12 text-center text-charcoal/30 font-medium italic">No customers found.</td>
+                </tr>
+              ) : filteredCustomers.map((c, i) => (
                 <motion.tr 
                   key={c.id}
                   initial={{ opacity: 0, y: 10 }}
@@ -69,8 +98,8 @@ export default function AdminCustomersPage() {
                 >
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-forest/5 text-forest flex items-center justify-center font-bold text-sm border border-forest/10">
-                        {c.avatar}
+                      <div className="w-10 h-10 rounded-xl bg-forest/5 text-forest flex items-center justify-center font-bold text-sm border border-forest/10 uppercase">
+                        {c.name.substring(0, 2)}
                       </div>
                       <div>
                         <p className="text-sm font-bold text-charcoal">{c.name}</p>
@@ -80,26 +109,20 @@ export default function AdminCustomersPage() {
                   </td>
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-2 text-sm text-charcoal/60 font-medium">
-                      <Building className="w-3.5 h-3.5 opacity-30" />
-                      {c.company}
+                      {new Date(c.created_at).toLocaleDateString()}
                     </div>
                   </td>
-                  <td className="px-8 py-5">
-                    <span className={cn(
-                      "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                      c.status === "Active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-charcoal/5 text-charcoal/40 border-charcoal/5"
-                    )}>
-                      {c.status}
-                    </span>
-                  </td>
-                  <td className="px-8 py-5 text-right font-bold text-charcoal text-sm">{c.orders}</td>
-                  <td className="px-8 py-5 text-right font-bold text-forest text-sm">৳ {c.value.toLocaleString()}</td>
+                  <td className="px-8 py-5 text-right font-bold text-charcoal text-sm">{c.order_count}</td>
+                  <td className="px-8 py-5 text-right font-bold text-forest text-sm">{formatPrice(c.total_spend)}</td>
                   <td className="px-8 py-5 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 rounded-lg text-charcoal/30 hover:bg-white hover:text-forest transition-all">
+                      <a href={`mailto:${c.email}`} className="p-2 rounded-lg text-charcoal/30 hover:bg-white hover:text-forest transition-all">
                         <ExternalLink className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 rounded-lg text-charcoal/30 hover:bg-white hover:text-charcoal transition-all">
+                      </a>
+                      <button
+                        onClick={() => window.alert(`Customer: ${c.name}\nEmail: ${c.email}\nOrders: ${c.order_count}`)}
+                        className="p-2 rounded-lg text-charcoal/30 hover:bg-white hover:text-charcoal transition-all"
+                      >
                         <MoreVertical className="w-4 h-4" />
                       </button>
                     </div>

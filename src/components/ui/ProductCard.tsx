@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ShoppingCart, Star, Leaf } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import { formatPrice, cn } from "@/lib/utils";
-import type { Product } from "@/types";
+import type { Product, PurchaseType, SubscriptionFrequency } from "@/types";
 
 interface ProductCardProps {
   product: Product;

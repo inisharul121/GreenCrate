@@ -21,11 +21,9 @@ export default function LoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate auth
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/dashboard");
-    }, 1500);
+    // Authenticate instantly
+    setLoading(false);
+    router.push("/dashboard");
   };
 
   return (

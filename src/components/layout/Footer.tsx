@@ -1,5 +1,6 @@
 "use client";
 
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { Leaf, Instagram, Linkedin, Twitter, Mail, MapPin, Phone } from "lucide-react";
 
@@ -12,23 +13,32 @@ const LINKS = {
   company: [
     { label: "About Us",   href: "/about" },
     { label: "Contact",    href: "/contact" },
-    { label: "Blog",       href: "#" },
-    { label: "Careers",    href: "#" },
+    { label: "Blog",       href: "/blog" },
+    { label: "Careers",    href: "/careers" },
   ],
   legal: [
-    { label: "Privacy Policy",   href: "#" },
-    { label: "Terms of Service", href: "#" },
-    { label: "Cookie Policy",    href: "#" },
+    { label: "Privacy Policy",   href: "/privacy" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Cookie Policy",    href: "/cookies" },
   ],
 };
 
 const SOCIAL = [
-  { icon: Instagram, label: "Instagram", href: "#" },
-  { icon: Linkedin,  label: "LinkedIn",  href: "#" },
-  { icon: Twitter,   label: "Twitter",   href: "#" },
+  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/" },
+  { icon: Linkedin,  label: "LinkedIn",  href: "https://www.linkedin.com/" },
+  { icon: Twitter,   label: "Twitter",   href: "https://twitter.com/" },
 ];
 
 export function Footer() {
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+
+  function handleNewsletterSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!newsletterEmail.trim()) return;
+    window.location.href = `mailto:hello@greencrate.com.bd?subject=Newsletter%20Signup&body=Please%20add%20${encodeURIComponent(newsletterEmail)}%20to%20the%20newsletter.`;
+    setNewsletterEmail("");
+  }
+
   return (
     <footer className="bg-charcoal text-white" role="contentinfo">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -52,7 +62,7 @@ export function Footer() {
             </ul>
             <div className="flex gap-3 mt-6">
               {SOCIAL.map(({ icon: Icon, label, href }) => (
-                <a key={label} href={href} aria-label={label} className="w-9 h-9 rounded-full bg-white/8 hover:bg-sage/25 flex items-center justify-center transition-colors">
+                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="w-9 h-9 rounded-full bg-white/8 hover:bg-sage/25 flex items-center justify-center transition-colors">
                   <Icon className="w-4 h-4 text-white/70" />
                 </a>
               ))}
@@ -63,7 +73,7 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-4">Products</h3>
             <ul className="space-y-2.5">
               {LINKS.products.map((l) => (
-                <li key={l.href}><Link href={l.href} className="text-sm text-white/50 hover:text-sage transition-colors">{l.label}</Link></li>
+                <li key={`${l.label}-${l.href}`}><Link href={l.href} className="text-sm text-white/50 hover:text-sage transition-colors">{l.label}</Link></li>
               ))}
             </ul>
           </div>
@@ -72,7 +82,7 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-4">Company</h3>
             <ul className="space-y-2.5">
               {LINKS.company.map((l) => (
-                <li key={l.href}><Link href={l.href} className="text-sm text-white/50 hover:text-sage transition-colors">{l.label}</Link></li>
+                <li key={`${l.label}-${l.href}`}><Link href={l.href} className="text-sm text-white/50 hover:text-sage transition-colors">{l.label}</Link></li>
               ))}
             </ul>
           </div>
@@ -80,8 +90,10 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wider mb-4">Stay Fresh</h3>
             <p className="text-sm text-white/50 mb-4">Get seasonal picks &amp; workplace food ideas.</p>
-            <form className="flex flex-col gap-2" onSubmit={(e) => e.preventDefault()}>
+            <form className="flex flex-col gap-2" onSubmit={handleNewsletterSubmit}>
               <input type="email" placeholder="your@company.com" aria-label="Email for newsletter"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-white/8 border border-white/10 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-sage/50 transition" />
               <button type="submit" className="w-full py-2.5 rounded-xl bg-forest hover:bg-forest-light text-white text-sm font-semibold transition-colors">
                 Subscribe

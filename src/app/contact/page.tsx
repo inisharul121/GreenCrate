@@ -22,7 +22,9 @@ export default function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSent(true); }, 1400);
+    // Send message instantly
+    setLoading(false);
+    setSent(true);
   };
 
   return (
@@ -31,7 +33,7 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sage-light text-sm font-semibold uppercase tracking-widest mb-3">Get in touch</p>
           <h1 className="font-display text-5xl sm:text-6xl font-bold text-white mb-4">Contact us</h1>
-          <p className="text-white/60 text-lg max-w-xl mx-auto">Questions about delivery, custom orders, or corporate accounts? We'd love to hear from you.</p>
+          <p className="text-white/60 text-lg max-w-xl mx-auto">Questions about delivery, custom orders, or corporate accounts? We&apos;d love to hear from you.</p>
         </div>
       </section>
 
@@ -47,7 +49,7 @@ export default function ContactPage() {
                   className="flex flex-col items-center text-center py-10">
                   <CheckCircle2 className="w-16 h-16 text-sage mb-4" />
                   <h3 className="font-display text-xl font-bold text-charcoal mb-2">Message sent!</h3>
-                  <p className="text-charcoal/55">We'll get back to you within 1 business day.</p>
+                  <p className="text-charcoal/55">We&apos;ll get back to you within 1 business day.</p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">

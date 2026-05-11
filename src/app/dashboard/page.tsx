@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Package, 
@@ -11,14 +12,54 @@ import {
   Clock
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import { api } from "@/lib/api";
+import Image from "next/image";
 import Link from "next/link";
 
-const ACTIVE_SUBSCRIPTIONS = [
-  { id: "sub-1", name: "Classic Fruit Box", frequency: "Weekly", nextDelivery: "Tomorrow, 8:00 AM", status: "Confirmed" },
-  { id: "sub-2", name: "Artisan Coffee Box", frequency: "Bi-weekly", nextDelivery: "May 5, 2026", status: "Upcoming" },
-];
-
 export default function UserDashboard() {
+  const [summary, setSummary] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const userId = "1"; // Mock user ID for demonstration
+
+  useEffect(() => {
+    async function fetchSummary() {
+      try {
+        const data = await api.users.getDashboardSummary(userId);
+        setSummary(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard summary:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSummary();
+  }, []);
+
+  if (loading) return <div className="p-8 text-charcoal/40 font-medium">Loading your dashboard...</div>;
+
+  const downloadLastInvoice = () => {
+    if (!summary?.lastOrder) return;
+    const content = [
+      `Invoice: ${summary.lastOrder.id}`,
+      `Date: ${new Date(summary.lastOrder.created_at).toLocaleDateString()}`,
+      `Product: ${summary.lastOrder.product_name || "Recent Order"}`,
+      `Status: ${summary.lastOrder.status}`,
+    ].join("\n");
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `invoice-${summary.lastOrder.id}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const copyInviteLink = async () => {
+    const url = `${window.location.origin}/signup?ref=greencrate-user`;
+    await navigator.clipboard.writeText(url);
+    alert("Invite link copied to clipboard.");
+  };
+
   return (
     <div className="space-y-10">
       {/* Welcome Header */}
@@ -50,9 +91,14 @@ export default function UserDashboard() {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-6">
-              {ACTIVE_SUBSCRIPTIONS.map((sub, i) => (
+              {summary?.subscriptions?.length === 0 ? (
+                <div className="sm:col-span-2 p-8 text-center text-charcoal/30 bg-forest/5 rounded-3xl border border-dashed border-forest/20">
+                  <p className="font-bold mb-2">No active subscriptions</p>
+                  <Link href="/fruits" className="text-forest text-sm hover:underline">Browse Products</Link>
+                </div>
+              ) : summary?.subscriptions?.map((sub: any, i: number) => (
                 <motion.div 
-                  key={sub.id}
+                  key={sub.product_id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
@@ -67,10 +113,10 @@ export default function UserDashboard() {
                     </span>
                   </div>
                   <h4 className="text-lg font-bold text-charcoal mb-1">{sub.name}</h4>
-                  <p className="text-xs text-charcoal/40 font-medium mb-4">{sub.frequency} Delivery</p>
+                  <p className="text-xs text-charcoal/40 font-medium mb-4 uppercase tracking-widest">{sub.frequency} Delivery</p>
                   <div className="flex items-center gap-2 pt-4 border-t border-forest/10">
                     <Clock className="w-3.5 h-3.5 text-forest/40" />
-                    <span className="text-xs font-bold text-charcoal/60">Next: {sub.nextDelivery}</span>
+                    <span className="text-xs font-bold text-charcoal/60">Started: {new Date(sub.created_at).toLocaleDateString()}</span>
                   </div>
                 </motion.div>
               ))}
@@ -78,28 +124,30 @@ export default function UserDashboard() {
           </section>
 
           {/* Last Order Summary */}
-          <section className="bg-charcoal rounded-[2.5rem] p-8 text-white relative overflow-hidden">
-            <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-forest/20 rounded-full blur-3xl" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-2xl font-display font-bold">Last Delivery</h3>
-                <span className="text-white/40 text-sm font-medium">April 24, 2026</span>
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 shrink-0">
-                  <img src="https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=200&q=80" alt="Order" className="w-full h-full object-cover" />
+          {summary?.lastOrder && (
+            <section className="bg-charcoal rounded-[2.5rem] p-8 text-white relative overflow-hidden">
+              <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-forest/20 rounded-full blur-3xl" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-2xl font-display font-bold">Last Delivery</h3>
+                  <span className="text-white/40 text-sm font-medium">{new Date(summary.lastOrder.created_at).toLocaleDateString()}</span>
                 </div>
-                <div>
-                  <h4 className="text-xl font-bold">Corporate Mega Box</h4>
-                  <p className="text-white/50 text-sm mt-1">Delivered to Main Lobby Reception</p>
-                  <div className="flex items-center gap-4 mt-4">
-                    <button className="text-xs font-bold bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-all">Download Invoice</button>
-                    <button className="text-xs font-bold text-sage hover:text-white transition-all flex items-center gap-1">Rate Delivery <ArrowRight className="w-3 h-3" /></button>
+                <div className="flex items-center gap-6">
+                  <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 shrink-0 relative">
+                    <Image src={summary.lastOrder.image || "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=200&q=80"} alt="Order" fill className="object-cover" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-bold">{summary.lastOrder.product_name || "Recent Order"}</h4>
+                    <p className="text-white/50 text-sm mt-1">Status: <span className="text-forest font-bold uppercase">{summary.lastOrder.status}</span></p>
+                    <div className="flex items-center gap-4 mt-4">
+                      <button onClick={downloadLastInvoice} className="text-xs font-bold bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-all">Download Invoice</button>
+                      <Link href="/dashboard/orders" className="text-xs font-bold text-sage hover:text-white transition-all flex items-center gap-1">Track Delivery <ArrowRight className="w-3 h-3" /></Link>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
         </div>
 
         {/* Right: Quick Links & Profile Info */}
@@ -135,7 +183,7 @@ export default function UserDashboard() {
             </div>
             <h4 className="text-xl font-display font-bold mb-2">Refer a Partner</h4>
             <p className="text-white/70 text-sm mb-6 leading-relaxed">Refer another office and both get 20% off your next month.</p>
-            <button className="w-full py-3 bg-white text-forest font-bold rounded-2xl hover:bg-cream transition-all shadow-lg">Get Invite Link</button>
+            <button onClick={copyInviteLink} className="w-full py-3 bg-white text-forest font-bold rounded-2xl hover:bg-cream transition-all shadow-lg">Get Invite Link</button>
           </section>
         </div>
       </div>

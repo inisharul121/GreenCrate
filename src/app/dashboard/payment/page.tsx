@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
   CreditCard, 
@@ -17,6 +18,39 @@ const METHODS = [
 ];
 
 export default function UserPaymentPage() {
+  const [methods, setMethods] = useState(METHODS);
+
+  const addMethod = () => {
+    const type = window.prompt("Add method type (Card/Mobile):", "Card");
+    if (!type) return;
+    const last4 = window.prompt("Last 4 digits (or phone mask):", "0000");
+    if (!last4) return;
+    const brand = type.toLowerCase() === "mobile" ? "Bkash" : "Visa";
+    const newMethod = {
+      id: Date.now(),
+      type,
+      last4,
+      expiry: type.toLowerCase() === "mobile" ? "Bkash" : "12/30",
+      brand,
+      isDefault: methods.length === 0,
+    };
+    setMethods((prev) => [...prev, newMethod]);
+  };
+
+  const removeMethod = (id: number) => {
+    setMethods((prev) => {
+      const filtered = prev.filter((m) => m.id !== id);
+      if (filtered.length > 0 && !filtered.some((m) => m.isDefault)) {
+        filtered[0] = { ...filtered[0], isDefault: true };
+      }
+      return filtered;
+    });
+  };
+
+  const setDefault = (id: number) => {
+    setMethods((prev) => prev.map((m) => ({ ...m, isDefault: m.id === id })));
+  };
+
   return (
     <div className="space-y-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -24,13 +58,13 @@ export default function UserPaymentPage() {
           <h2 className="text-3xl font-display font-bold text-charcoal">Payment Methods</h2>
           <p className="text-charcoal/40 font-medium italic">Manage how you pay for your office deliveries.</p>
         </div>
-        <button className="btn-primary py-3 px-6 shadow-xl hover:shadow-forest/20">
+        <button onClick={addMethod} className="btn-primary py-3 px-6 shadow-xl hover:shadow-forest/20">
           <Plus className="w-5 h-5" /> Add New Method
         </button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {METHODS.map((m, i) => (
+        {methods.map((m, i) => (
           <motion.div
             key={m.id}
             initial={{ opacity: 0, y: 10 }}
@@ -65,11 +99,11 @@ export default function UserPaymentPage() {
             </div>
 
             <div className="mt-8 pt-8 border-t border-sage/5 flex items-center justify-between">
-              <button className="text-xs font-bold text-charcoal/30 hover:text-rose-500 transition-colors uppercase tracking-widest flex items-center gap-2">
+              <button onClick={() => removeMethod(m.id)} className="text-xs font-bold text-charcoal/30 hover:text-rose-500 transition-colors uppercase tracking-widest flex items-center gap-2">
                 <Trash2 className="w-3.5 h-3.5" /> Remove
               </button>
               {!m.isDefault && (
-                <button className="text-xs font-bold text-forest hover:underline uppercase tracking-widest">
+                <button onClick={() => setDefault(m.id)} className="text-xs font-bold text-forest hover:underline uppercase tracking-widest">
                   Set as Default
                 </button>
               )}

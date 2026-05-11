@@ -1,5 +1,6 @@
 "use client";
 
+import { FormEvent, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
   Settings, 
@@ -14,6 +15,31 @@ import {
 import { cn } from "@/lib/utils";
 
 export default function AdminSettingsPage() {
+  const [form, setForm] = useState({
+    taxRate: "15",
+    freeDeliveryThreshold: "5000",
+    enabled: true,
+  });
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const raw = localStorage.getItem("admin-settings");
+    if (raw) {
+      try {
+        setForm(JSON.parse(raw));
+      } catch {
+        // ignore invalid values
+      }
+    }
+  }, []);
+
+  function handleSave(e: FormEvent) {
+    e.preventDefault();
+    localStorage.setItem("admin-settings", JSON.stringify(form));
+    setMessage("Configuration saved.");
+    setTimeout(() => setMessage(""), 2500);
+  }
+
   return (
     <div className="space-y-10">
       <div>
@@ -31,15 +57,23 @@ export default function AdminSettingsPage() {
         </div>
 
         <div className="lg:col-span-2 space-y-8">
-          <div className="bg-white rounded-[3rem] p-10 shadow-premium border border-sage/5">
+          <form onSubmit={handleSave} className="bg-white rounded-[3rem] p-10 shadow-premium border border-sage/5">
             <h3 className="text-xl font-display font-bold text-charcoal mb-8 border-b border-sage/5 pb-4">Market Configuration</h3>
             
             <div className="space-y-8">
               <div className="grid sm:grid-cols-2 gap-8">
                 <Input label="Primary Market" value="Bangladesh" readOnly />
                 <Input label="Currency" value="BDT (৳)" readOnly />
-                <Input label="Tax Rate (%)" placeholder="15" />
-                <Input label="Free Delivery Threshold" placeholder="5000" />
+                <Input
+                  label="Tax Rate (%)"
+                  value={form.taxRate}
+                  onChange={(value: string) => setForm((p) => ({ ...p, taxRate: value }))}
+                />
+                <Input
+                  label="Free Delivery Threshold"
+                  value={form.freeDeliveryThreshold}
+                  onChange={(value: string) => setForm((p) => ({ ...p, freeDeliveryThreshold: value }))}
+                />
               </div>
 
               <div className="p-6 rounded-3xl bg-forest/5 border border-forest/10 flex items-center gap-4">
@@ -51,19 +85,24 @@ export default function AdminSettingsPage() {
                   </p>
                 </div>
                 <div className="ml-auto">
-                  <div className="w-12 h-6 rounded-full bg-forest relative cursor-pointer">
-                    <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full" />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm((p) => ({ ...p, enabled: !p.enabled }))}
+                    className={cn("w-12 h-6 rounded-full relative cursor-pointer transition-colors", form.enabled ? "bg-forest" : "bg-charcoal/20")}
+                  >
+                    <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", form.enabled ? "right-1" : "left-1")} />
+                  </button>
                 </div>
               </div>
             </div>
 
             <div className="mt-10 pt-10 border-t border-sage/5 flex justify-end">
-              <button className="btn-primary py-4 px-10 shadow-xl shadow-forest/10">
+              <button type="submit" className="btn-primary py-4 px-10 shadow-xl shadow-forest/10">
                 <Save className="w-5 h-5" /> Save Configuration
               </button>
             </div>
-          </div>
+            {message ? <p className="mt-4 text-sm text-forest font-semibold text-right">{message}</p> : null}
+          </form>
         </div>
       </div>
     </div>
@@ -82,7 +121,7 @@ function SettingsTab({ icon: Icon, label, active }: any) {
   );
 }
 
-function Input({ label, placeholder, value, readOnly }: any) {
+function Input({ label, placeholder, value, readOnly, onChange }: any) {
   return (
     <div>
       <label className="block text-xs font-bold text-charcoal/30 uppercase tracking-widest mb-2 ml-1">{label}</label>
@@ -90,6 +129,7 @@ function Input({ label, placeholder, value, readOnly }: any) {
         type="text" 
         value={value}
         readOnly={readOnly}
+        onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
         className={cn(
           "w-full px-6 py-4 rounded-2xl border-2 text-charcoal font-medium transition-all",
